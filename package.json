@@ -1,0 +1,23 @@
+{
+  "name": "juristat_app",
+  "version": "1.0.0",
+  "description": "Patent analytics and CRM.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha",
+    "start": "node server.js"
+  },
+  "author": "Brent Farese",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.4.1"
+  }
+}
