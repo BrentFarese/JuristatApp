@@ -97,6 +97,7 @@ module.exports = {
         }
       });
 
+    queryInterface.addIndex()
     
     queryInterface.createTable(
       'matters', {
