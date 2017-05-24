@@ -47,12 +47,14 @@ const Matter = Sequelize.define('Matters', {
 		},
 		instanceMethods: {
 			apiRepr: function() {
-				id: this.id,
-				firmReference: this.firmReference,
-				clientReference: this.clientReference,
-				legalType: this.legalType,
-				importanceLevel: this.importanceLevel
-			};
+				return {
+					id: this.id,
+					firmReference: this.firmReference,
+					clientReference: this.clientReference,
+					legalType: this.legalType,
+					importanceLevel: this.importanceLevel
+				}; 
+			}
 		}
 	}
 });
