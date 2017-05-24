@@ -40,8 +40,20 @@ const User = sequelize.define('Users', {
 		type: Sequelize.STRING,
 		allowNull: false
 	},
-	address: {
-		type: Sequelize.TEXT
+	streetAddress: {
+		type: Sequelize.TEXT,
+		field: 'street_address'
+	},
+	state: {
+		type: Sequelize.STRING
+	},
+	postalCode: {
+		type: Sequelize.STRING,
+		field: 'postal_code'
+	},
+	country: {
+		type: Sequelize.STRING, 
+		defaultValue: 'US'
 	},
 	userType: {
 		type: Sequelize.STRING,
