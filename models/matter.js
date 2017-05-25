@@ -10,22 +10,28 @@ const Matter = Sequelize.define('Matters', {
 		primaryKey: true
 	},
 	createdAt: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
+		field: 'created_at'
 	},
 	updatedAt: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
+		field: 'updated_at'
 	},
 	firmReference: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		field: 'firm_reference'
 	},
 	clientReference: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		field: 'client_reference'
 	},
 	legalType: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		field: 'legal_type'
 	},
 	importanceLevel: {
-		type: Sequelize.INTEGER
+		type: Sequelize.INTEGER,
+		field: 'importance_level'
 	}, {
 		tableName: 'matters',
 		underscored: true,

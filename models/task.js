@@ -10,10 +10,12 @@ const Task = Sequelize.define('Tasks', {
 		primaryKey: true
 	},
 	createdAt: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE, 
+		field: 'created_at'
 	},
 	updatedAt: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
+		field: 'updated_at'
 	},
 	completed: {
 		type: Sequelize.BOOLEAN,
@@ -22,11 +24,13 @@ const Task = Sequelize.define('Tasks', {
 	},
 	taskDescription: {
 		type: Sequelize.TEXT,
-		allowNull: false
+		allowNull: false,
+		field: 'task_description'
 	},
 	dueDate: {
 		type: Sequelize.DATE,
-		allowNull: false
+		allowNull: false,
+		field: 'due_date'
 	}, {
 		tableName: 'tasks',
 		underscored: true,
@@ -44,9 +48,8 @@ const Task = Sequelize.define('Tasks', {
 					as: 'applications',
 					onDelete: 'SET NULL'
 				});
-				Task.hasOne(models.User, {
-					as: 'users',
-					onDelete: 'SET NULL'
+				Task.belongsToMany(models.User, {
+					through: 'UserTask'
 				});
 			}
 		},
