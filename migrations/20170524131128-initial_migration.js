@@ -97,8 +97,10 @@ module.exports = {
         }
       });
 
-    queryInterface.addIndex()
-    
+    queryInterface.addIndex('applications', ['serialNumber'], {
+      indicesType: 'UNIQUE'
+    });
+
     queryInterface.createTable(
       'matters', {
         id: {
@@ -132,6 +134,17 @@ module.exports = {
           onDelete: 'cascade'
         }
       });
+
+    queryInterface.addIndex('matters', ['firmReference'], {
+      indicesType: 'UNIQUE'
+    });
+
+    queryInterface.addIndex('matters', ['clientReference'], {
+      indicesType: 'UNIQUE'
+    });
+
+    queryInterface.addIndex('matters', ['importanceLevel']);
+
     queryInterface.createTable(
       'tasks', {
         id: {
@@ -174,6 +187,11 @@ module.exports = {
           onDelete: 'cascade'
         }
       });
+
+    queryInterface.addIndex('tasks', ['completed']);
+
+    queryInterface.addIndex('tasks', ['dueDate']);
+
     queryInterface.createTable(
       'documents', {
         id: {
@@ -219,6 +237,9 @@ module.exports = {
           onDelete: 'SET NULL'
         }
       });
+
+    queryInterface('documents', ['documentType']);
+    
   },
 
   down: (queryInterface, Sequelize) => {

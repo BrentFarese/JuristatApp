@@ -10,14 +10,17 @@ const Document = Sequelize.define('Documents', {
 		primaryKey: true
 	},
 	createdAt: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
+		field: 'created_at'
 	},
 	updatedAt: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
+		field: 'updated_at'
 	},
 	documentType: {
 		type: Sequelize.STRING,
-		allowNull: false
+		allowNull: false,
+		field: 'document_type'
 	},
 	url: {
 		type: Sequelize.TEXT,

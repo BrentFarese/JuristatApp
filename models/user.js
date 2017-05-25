@@ -20,6 +20,7 @@ const User = sequelize.define('Users', {
 	userName: {
 		type: Sequelize.STRING,
 		allowNull: false,
+		unique: true,
 		field: 'user_name'
 	},
 	firstName: {
@@ -38,7 +39,8 @@ const User = sequelize.define('Users', {
 	},
 	email: {
 		type: Sequelize.STRING,
-		allowNull: false
+		allowNull: false,
+		unique: true
 	},
 	streetAddress: {
 		type: Sequelize.TEXT,
