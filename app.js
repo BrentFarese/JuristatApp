@@ -7,12 +7,15 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const morgan = require('morgan');
 
-const authorsRouter = require('./routes/authors');
+const applicationRouter = require('./routes/applications');
 
-const commentsRouter = require('./routes/comments');
+const documentRouter = require('./routes/documents');
 
-const postsRouter = require ('./routes/posts');
+const matterRouter = require('./routes/matters');
 
+const taskRouter = require('./routes/tasks')
+
+const usersRouter = require('./routes/users');
 
 // Set up the express app
 const app = express();
@@ -20,13 +23,17 @@ const app = express();
 app.use(morgan('common'));
 app.use(bodyParser.json());
 
-app.use('/authors', authorsRouter);
+app.use('/applications', applicationRouter);
 
-app.use('/comments', commentsRouter);
+app.use('/documents', documentRouter);
 
-app.use('/posts', postsRouter);
+app.use('/matters', matterRouter);
 
-app.use('*', function(req, res) {
+app.use('/tasks', taskRouter);
+
+app.use('/users', usersRouter);
+
+app.use('*', (req, res) => {
   res.status(404).json({message: 'Not Found'});
 });
 

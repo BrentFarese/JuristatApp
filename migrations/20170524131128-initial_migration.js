@@ -101,6 +101,10 @@ module.exports = {
       indicesType: 'UNIQUE'
     });
 
+    queryInterface.addIndex('applications', ['userId'], {
+      indicesType: 'UNIQUE'
+    });
+
     queryInterface.createTable(
       'matters', {
         id: {
@@ -144,6 +148,10 @@ module.exports = {
     });
 
     queryInterface.addIndex('matters', ['importanceLevel']);
+
+    queryInterface.addIndex('matters', ['applicationId'], {
+      indicesType: 'UNIQUE'
+    });
 
     queryInterface.createTable(
       'tasks', {
@@ -192,6 +200,14 @@ module.exports = {
 
     queryInterface.addIndex('tasks', ['dueDate']);
 
+    queryInterface.addIndex('tasks', ['userId'], {
+      indicesType: 'UNIQUE'
+    });
+
+    queryInterface.addIndex('tasks', ['matterId'], {
+      indicesType: 'UNIQUE'
+    });
+
     queryInterface.createTable(
       'documents', {
         id: {
@@ -238,9 +254,19 @@ module.exports = {
         }
       });
 
-    queryInterface('documents', ['documentType']);
-    
-  },
+    queryInterface.addIndex('documents', ['documentType']);
+
+    queryInterface.addIndex('documents', ['applciationId'], {
+      indicesType: 'UNIQUE'
+    });
+
+    queryInterface.addIndex('documents', ['taskId'], {
+      indicesType: 'UNIQUE'
+    });
+
+    queryInterface.addIndex('documents', ['matterId'], {
+      indicesType: 'UNIQUE'
+    });
 
   down: (queryInterface, Sequelize) => {
 
