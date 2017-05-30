@@ -3,7 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
-      return Promise.all([ ])
+      return Promise.all([
 
         queryInterface.sequelize.query('CREATE EXTENSION "uuid-ossp"')
         .then(() => { 
@@ -289,7 +289,10 @@ module.exports = {
                 onDelete: 'cascade'
               }
             })
-});
+        });
+])
+})
+},
 
 
 down: (queryInterface, Sequelize) => {
