@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
 	User.findById(req.params.id)
-	.then(user => res.json(user.apiRepr()));
+	.then(user => res.status(200).json(user.apiRepr()));
 });
 
 router.get('/:id/applications', (req, res) => {
@@ -100,4 +100,17 @@ router.put('/:id', (req, res) => {
 	.catch(err => res.status(500).json({message: 'Internal server error.'}));
 
 });
+
+router.delete('/:id', (req, res) => {
+	return User
+	.destroy({
+		where: {
+			id: req.params.id
+		}
+	})
+	.then(() => res.status(204).end())
+	.catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+module.exports = router;
 
