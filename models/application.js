@@ -39,7 +39,7 @@ const Application = sequelize.define('Applications', {
 				});
 				Application.hasMany(models.Document, {
 					as: 'documents',
-					onDelete: 'cascade'
+					onDelete: 'SET NULL'
 				});
 			}
 		}, 
