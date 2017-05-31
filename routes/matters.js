@@ -4,30 +4,52 @@ const router = express.Router();
 const {Application, Document, Index, Matter, Task, User} = require('../models');
 
 router.get('/:id', (req, res) => {
-	Application.findById(req.params.id)
-	.then(application => res.status(200).json(application.apiRepr()));
+	Matter.findById(req.params.id)
+	.then(matter => res.status(200).json(matter.apiRepr()));
 });
 
-router.get(':id/tasks', (req, res) => {
-	Application.findById(req.params.id, {
+router.get('/:id/tasks', (req, res) => {
+	Matter.findById(req.params.id, {
 		include: [{
 			model: Task,
 			as: 'tasks'
-		}]})
-	.then(tasks => res.json({tasks: tasks.map(task => task.apiRepr())}));
+		}]
+	})
+	.then(tasks => res.status(200).json({tasks: tasks.map(task => task.apiRepr())}));
+});
+
+router.get(':id/users', (req, res) => {
+	Matter.findById(req.params.id, {
+		include: [{
+			model: User,
+			as: 'users'
+		}]
+	})
+	.then(users => res.status(200).json({users: users.map(user => user.apiRepr())}));
 });
 
 router.get(':id/documents', (req, res) => {
-	Application.findById(req.params.id, {
+	Matter.findById(req.params.id, {
 		include: [{
 			model: Document,
 			as: 'documents'
-		}]})
+		}]
+	})
 	.then(documents => res.status(200).json({documents: documents.map(document => document.apiRepr())}));
 });
 
+router.get(':id/applications', (req, res) => {
+	Matter.findById(req.params.id, {
+		include: [{
+			model: Application,
+			as: 'applications'
+		}]
+	})
+	.then(applications => res.status(200).json({applications: applications.map(application => application.apiRepr())}));
+});
+
 router.post('/', (req, res) => {
-	const requiredFields = ['serialNumber', 'title'];
+	const requiredFields = ['firmReference', 'clientReference', 'legalType', 'importanceLevel'];
 	
 	for (let i=0; i<requiredFields.length; i++) {
 		if (!(requiredFields[i] in req.body)) {
@@ -38,12 +60,14 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Application.create({
-		serialNumber: req.body.serialNumber,
-		title: req.body.title
+	return Matter.create({
+		firmReference: req.body.firmReference,
+		clientReference: req.body.clientReference,
+		legalType: req.body.legalType,
+		importanceLevel: req.body.importanceLevel
 	})
-	.then(application => {
-		res.status(201).json(application.apiRepr());
+	.then(matter => {
+		res.status(201).json(matter.apiRepr());
 	})
 	.catch(err => {
 		return res.status(500).send({message: err.message});
@@ -51,23 +75,23 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-	if (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
+	f (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
 		const message = (
 			`Request path id (${req.params.id}) and request body id ` +
 			`(${req.body.id}) must match`);
 		res.status(400).json({message: message});
 	}
 
-	const newApplication = {};
-	const updateableFields = ['serialNumber', 'title'];
+	const newMatter = {};
+	const updateableFields = ['firmReference', 'clientReference', 'legalType', 'importanceLevel'];
 
 	updateableFields.forEach( field => {
 		if (field in req.body) {
-			newApplication[field] = req.body[field];
+			newMatter[field] = req.body[field];
 		}
 	});
 
-	return Application.update(newApplication, {
+	return Matter.update(newMatter, {
 		where: {
 			id: req.body.id
 		}
@@ -80,7 +104,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Application
+	return Matter
 	.destroy({
 		where: {
 			id: req.params.id
