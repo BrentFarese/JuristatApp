@@ -66,17 +66,14 @@ const User = sequelize.define('Users', {
 		underscored: true, 
 		classMethods: {
 			associate: function(models) {
-				User.hasMany(models.Application, {
-					as: 'applications', 
-					onDelete: 'SET NULL'
+				User.belongsToMany(models.Application, {
+					through: 'UserApplication'
 				});
-				User.hasMany(models.Matter, {
-					as: 'matters', 
-					onDelete: 'SET NULL'
+				User.belongsToMany(models.Matter, {
+					through: 'UserMatter'
 				});
-				User.hasMany(models.Task, {
-					as: 'tasks',
-					onDelete: 'SET NULL'
+				User.belongsToMany(models.Task, {
+					through: 'UserTask'
 				});
 			}
 		},

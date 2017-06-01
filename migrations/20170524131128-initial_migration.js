@@ -264,7 +264,7 @@ module.exports = {
 
                   queryInterface.addIndex('documents', ['matterId']);
                   queryInterface.createTable(
-                    'userTask', {
+                    'UserTask', {
                       taskId: {
                         type: Sequelize.UUID,
                         references: {
@@ -281,25 +281,63 @@ module.exports = {
                         },
                         onDelete: 'cascade'
                       }
-                    })
+                    });
+                  queryInterface.createTable(
+                    'UserMatter', {
+                      matterId: {
+                        type: Sequelize.UUID,
+                        references: {
+                          model: 'matters',
+                          key: 'id'
+                        },
+                        onDelete: 'cascade'
+                      },
+                      userId: {
+                        type: Sequelize.UUID,
+                        references: {
+                          model: 'users',
+                          key: 'id'
+                        }
+                        onDelete: 'cascade'
+                      }
+                    });
+                  queryInterface.createTable(
+                    'UserApplication', {
+                      applicationId: {
+                        type: Sequelize.UUID,
+                        references: {
+                          model: 'applications',
+                          key: 'id'
+                        },
+                        onDelete: 'cascade'
+                      },
+                      userId: {
+                        type: Sequelize.UUID,
+                        references: {
+                          model: 'users',
+                          key: 'id'
+                        }
+                        onDelete: 'cascade'
+                      }
+                    });
+                  })
                 })
               })
             })
           })
-        })
-      ])
-    })
-  },
+        ])
+      })
+    },
 
 
-  down: (queryInterface, Sequelize) => {
+down: (queryInterface, Sequelize) => {
 
-    queryInterface.dropTable('users');
-    queryInterface.dropTable('applications');
-    queryInterface.dropTable('matters');
-    queryInterface.dropTable('tasks');
-    queryInterface.dropTable('documents');
-    queryInterface.dropTable('userTask');
-    queryInterface.sequelize.query('DROP EXTENSION "uuid-ossp"');
-  }
+  queryInterface.dropTable('users');
+  queryInterface.dropTable('applications');
+  queryInterface.dropTable('matters');
+  queryInterface.dropTable('tasks');
+  queryInterface.dropTable('documents');
+  queryInterface.dropTable('userTask');
+  queryInterface.sequelize.query('DROP EXTENSION "uuid-ossp"');
+}
 };

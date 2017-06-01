@@ -41,6 +41,9 @@ const Application = sequelize.define('Applications', {
 					as: 'documents',
 					onDelete: 'SET NULL'
 				});
+				Application.belongsToMany(models.User, {
+					through: 'UserApplication'
+				});
 			}
 		}, 
 		instanceMethods: {

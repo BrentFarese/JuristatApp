@@ -15,7 +15,7 @@ router.get('/:id/tasks', (req, res) => {
 			as: 'tasks'
 		}]
 	})
-	.then(tasks => res.status(200).json({tasks: tasks.map(task => task.apiRepr())}));
+	.then(matter => res.status(200).json({tasks: matter.tasks.map(task => task.apiRepr())}));
 });
 
 router.get(':id/users', (req, res) => {
@@ -25,7 +25,7 @@ router.get(':id/users', (req, res) => {
 			as: 'users'
 		}]
 	})
-	.then(users => res.status(200).json({users: users.map(user => user.apiRepr())}));
+	.then(matter => res.status(200).json({users: matter.users.map(user => user.apiRepr())}));
 });
 
 router.get(':id/documents', (req, res) => {
@@ -35,7 +35,7 @@ router.get(':id/documents', (req, res) => {
 			as: 'documents'
 		}]
 	})
-	.then(documents => res.status(200).json({documents: documents.map(document => document.apiRepr())}));
+	.then(matter => res.status(200).json({documents: matter.documents.map(document => document.apiRepr())}));
 });
 
 router.get(':id/applications', (req, res) => {
@@ -45,7 +45,7 @@ router.get(':id/applications', (req, res) => {
 			as: 'applications'
 		}]
 	})
-	.then(applications => res.status(200).json({applications: applications.map(application => application.apiRepr())}));
+	.then(matter => res.status(200).json({applications: matter.applications.map(application => application.apiRepr())}));
 });
 
 router.post('/', (req, res) => {

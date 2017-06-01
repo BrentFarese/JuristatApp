@@ -19,7 +19,7 @@ router.get('/:id/applications', (req, res) => {
 			model: Application,
 			as: 'applications'
 		}]})
-	.then(applications => res.json({applications: applications.map(app => app.apiRepr())}));
+	.then(user => res.json({applications: user.applications.map(app => app.apiRepr())}));
 });
 
 router.get('/:id/matters', (req, res) => {
@@ -28,7 +28,7 @@ router.get('/:id/matters', (req, res) => {
 			model: Matter,
 			as: 'matters'
 		}]})
-	.then(matters => res.json({matters: matters.map(matter => matter.apiRepr())}));
+	.then(user => res.json({matters: user.matters.map(matter => matter.apiRepr())}));
 });
 
 router.get('/:id/tasks', (req, res) => {
@@ -37,7 +37,20 @@ router.get('/:id/tasks', (req, res) => {
 			model: Task,
 			as: 'tasks'
 		}]})
-	.then(tasks => res.json({tasks: tasks.map(task => task.apiRepr())}));
+	.then(user => res.json({tasks: user.tasks.map(task => task.apiRepr())}));
+
+	if (req.query.status) {
+		User.findById(req.params.id, {
+			include: [{
+				model: 'Task',
+				as: 'tasks',
+				through: {
+					attributes: ['completed', 'taskDescription', 'dueDate'],
+					where: {completed: req.query.status}
+				}
+			}]
+		})
+	};
 });
 
 router.post('/', (req, res) => {

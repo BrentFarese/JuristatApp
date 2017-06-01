@@ -30,7 +30,7 @@ const Document = Sequelize.define('Documents', {
 		underscored: true,
 		classMethods: {
 			associate: function(models) {
-				Document.hasMany(models.Task, {
+				Document.hasOne(models.Task, {
 					as: 'tasks',
 					onDelete: 'SET NULL'
 				});

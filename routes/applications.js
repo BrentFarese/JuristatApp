@@ -14,7 +14,7 @@ router.get(':id/tasks', (req, res) => {
 			model: Task,
 			as: 'tasks'
 		}]})
-	.then(tasks => res.json({tasks: tasks.map(task => task.apiRepr())}));
+	.then(application => res.json({tasks: application.tasks.map(task => task.apiRepr())}));
 });
 
 router.get(':id/documents', (req, res) => {
@@ -23,7 +23,7 @@ router.get(':id/documents', (req, res) => {
 			model: Document,
 			as: 'documents'
 		}]})
-	.then(documents => res.status(200).json({documents: documents.map(document => document.apiRepr())}));
+	.then(application => res.status(200).json({documents: application.documents.map(document => document.apiRepr())}));
 });
 
 router.post('/', (req, res) => {

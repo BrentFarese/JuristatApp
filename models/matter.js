@@ -49,6 +49,9 @@ const Matter = Sequelize.define('Matters', {
 					as: 'documents',
 					onDelete: 'SET NULL'
 				});
+				Matter.belongsToMany(models.User, {
+					through: 'UserMatter'
+				});
 			}
 		},
 		instanceMethods: {

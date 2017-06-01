@@ -15,7 +15,7 @@ router.get(':id/users', (req, res) => {
 			as: 'users'
 		}]
 	})
-	.then(users => res.status(200).json({users: users.map(user => user.apiRepr())}));
+	.then(task => res.status(200).json({users: task.users.map(user => user.apiRepr())}));
 });
 
 router.get(':id/documents', (req, res) => {
@@ -25,7 +25,7 @@ router.get(':id/documents', (req, res) => {
 			as: 'documents'
 		}]
 	})
-	.then(documents => res.status(200).json({documents: documents.map(document => document.apiRepr())}));
+	.then(task => res.status(200).json({documents: task.documents.map(document => document.apiRepr())}));
 });
 
 router.get(':id/applications', (req, res) => {
@@ -35,7 +35,7 @@ router.get(':id/applications', (req, res) => {
 			as: 'applications'
 		}]
 	})
-	.then(applications => res.status(200).json({applications: applications.map(application => application.apiRepr())}));
+	.then(matter => res.status(200).json({applications: matter.applications.map(application => application.apiRepr())}));
 });
 
 router.get(':id/matters', (req, res) => {
@@ -45,8 +45,10 @@ router.get(':id/matters', (req, res) => {
 			as: 'matters'
 		}]
 	})
-	.then(matters => res.status(200).json({matters: matters.map(matter => matter.apiRepr())}));
+	.then(task => res.status(200).json({matters: task.matters.map(matter => matter.apiRepr())}));
 });
+
+router.get('')
 
 router.post('/', (req, res) => {
 	const requiredFields = ['completed', 'taskDescription', 'dueDate'];
