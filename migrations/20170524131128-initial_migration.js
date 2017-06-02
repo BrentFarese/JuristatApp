@@ -337,7 +337,9 @@ down: (queryInterface, Sequelize) => {
   queryInterface.dropTable('matters');
   queryInterface.dropTable('tasks');
   queryInterface.dropTable('documents');
-  queryInterface.dropTable('userTask');
+  queryInterface.dropTable('UserTask');
+  queryInterface.dropTable('UserMatter');
+  queryInterface.dropTable('UserApplication');
   queryInterface.sequelize.query('DROP EXTENSION "uuid-ossp"');
 }
 };

@@ -31,8 +31,6 @@ function generateFakeUser(applicationId, matterId, taskId) {
 	return fakeUser;
 };
 
-
-
 function generateFakeApplication(userId, documentId, matterId, taskId) {
 	const fakeApplication = {
 		serialNumber: faker.random.uuid(),
@@ -54,18 +52,50 @@ function generateFakeApplication(userId, documentId, matterId, taskId) {
 };
 
 function generateFakeMatter(userId, documentId, applicationId, taskId) {
-
+	const fakeMatter = {
+		firmReference: faker.random.uuid(),
+		clientReference: faker.random.uuid(),
+		legalType: faker.random.word(),
+		importanceLevel: fake.random.number()
+	};
+	return fakeMatter;
 };
 
 function generateFakeDocument(applicationId, matterId, taskId) {
+	const fakeDocument = {
+		documentType: faker.random.word(),
+		url: faker.internet.url()
+	};
 
 };
 
 function generateFakeTask(userId, documentId, matterId, taskId) {
-
+	const fakeTask = {
+		completed: faker.random.boolean(),
+		taskDescription: faker.lorem.words(),
+		dueDate: faker.date.future()
+	};
+	return fakeTask;
 };
 
-function seedDatabase() {
+function createTables() {
 	User.create(generateFakeUser())
-	.then(user => user.tasks = Task.create(generateFakeTask()))
-}
+	.then(user => {
+		Task.create(generateFakeTask(user.id));
+		Matter.create(generateFakeMatter(user.id));
+		Application.create(generateFakeApplication(user.id));
+	})
+	.then(matter => {
+		User.upsert({matterId: matter.id});
+		Task.upsert({matterId: matter.id});
+		Application.upsert({matterId: matter.id});
+		Document.create(generateFakeDocument(matter.id));
+	})
+	.then((task, document, application) => {
+		
+	})
+};
+
+function seedDatabase(num) {
+
+};
