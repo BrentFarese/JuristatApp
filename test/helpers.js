@@ -15,7 +15,7 @@ after(function() {
 	return closeServer();
 });
 
-function generateFakeUser(applicationId, matterId, taskId) {
+function generateFakeUser() {
 	const fakeUser = {
 		userName: faker.internet.userName(),
 		firstName: faker.name.firstName(),
@@ -31,27 +31,15 @@ function generateFakeUser(applicationId, matterId, taskId) {
 	return fakeUser;
 };
 
-function generateFakeApplication(userId, documentId, matterId, taskId) {
+function generateFakeApplication() {
 	const fakeApplication = {
 		serialNumber: faker.random.uuid(),
 		title: faker.random.words()
 	};
-	if (userId) {
-		fakeApplication.userId = userId;
-	}
-	if (documentId) {
-		fakeApplication.documentId = documentId;
-	}
-	if (matterId) {
-		fakeApplication.matterId = matterId;
-	}
-	if (taskId) {
-		fakeApplication.taskId = taskId;
-	}
 	return fakeApplication;
 };
 
-function generateFakeMatter(userId, documentId, applicationId, taskId) {
+function generateFakeMatter() {
 	const fakeMatter = {
 		firmReference: faker.random.uuid(),
 		clientReference: faker.random.uuid(),
@@ -61,7 +49,7 @@ function generateFakeMatter(userId, documentId, applicationId, taskId) {
 	return fakeMatter;
 };
 
-function generateFakeDocument(applicationId, matterId, taskId) {
+function generateFakeDocument() {
 	const fakeDocument = {
 		documentType: faker.random.word(),
 		url: faker.internet.url()
@@ -69,7 +57,7 @@ function generateFakeDocument(applicationId, matterId, taskId) {
 
 };
 
-function generateFakeTask(userId, documentId, matterId, taskId) {
+function generateFakeTask() {
 	const fakeTask = {
 		completed: faker.random.boolean(),
 		taskDescription: faker.lorem.words(),
@@ -79,20 +67,54 @@ function generateFakeTask(userId, documentId, matterId, taskId) {
 };
 
 function createTables() {
+	let userId, documentId, applicationId, taskId
 	User.create(generateFakeUser())
 	.then(user => {
-		Task.create(generateFakeTask(user.id));
-		Matter.create(generateFakeMatter(user.id));
-		Application.create(generateFakeApplication(user.id));
+		userId = user.id;
+		Matter.create(generateFakeMatter());
 	})
 	.then(matter => {
-		User.upsert({matterId: matter.id});
-		Task.upsert({matterId: matter.id});
-		Application.upsert({matterId: matter.id});
-		Document.create(generateFakeDocument(matter.id));
+		matterId = matter.id;
+		Document.create(generateFakeDocument());
 	})
-	.then((task, document, application) => {
-		
+	.then(document => {
+		documentId = document.id;
+		Application.create(generateFakeApplication());
+	})
+	.then(application => {
+		applicationId = application.id;
+		Task.create(generateFakeTask());
+	})
+	.then(task => {
+		taskId = task.id;
+		User.upsert({
+			applicationId: applicationId,
+			matterId: matterId,
+			taskId: taskId
+		});
+		Matter.upsert({
+			userId: userId,
+			documentId: documentId,
+			applicationId: applicationId,
+			taskId: taskId
+		});
+		Document.upsert({
+			applicationId: applicationId,
+			taskId: taskId,
+			matterId: matterId
+		});
+		Application.upsert({
+			matterId: matterId,
+			userId: userId,
+			documentId: documentId,
+			taskId: taskId
+		});
+		Task.upsert({
+			matterId: matterId,
+			userId: userId,
+			documentId: documentId,
+			taskId: taskId
+		});
 	})
 };
 
