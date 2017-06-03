@@ -3,7 +3,11 @@ const faker = require('faker');
 const {PORT} = require('../config');
 const {runServer, closeServer} = require('../server');
 const {sequelize} = require('../db/sequelize');
-const {Application, Document, Matter, Task, User} = require('../models');
+const {Application} = require('../models/application'); 
+const {Document} = require('../models/document');
+const {Matter} = require('../models/matter');
+const {Task} = require('../models/task');
+const {User} = require('../models/user');
 
 before(function() {
 	return sequelize
@@ -66,7 +70,7 @@ function generateFakeTask() {
 	return fakeTask;
 };
 
-function createTables() {
+function createRecords() {
 	let userId, documentId, applicationId, taskId
 	User.create(generateFakeUser())
 	.then(user => {
@@ -119,5 +123,22 @@ function createTables() {
 };
 
 function seedDatabase(num) {
+	for (let i=0; i<num; i++) {
+		createRecords();
+	};
+};
 
+function dropRecords() {
+	return Promise.all([
+		User.truncate({cascade: true}),
+		Application.truncate({cascade: true}),
+		Matter.truncate({cascade: true}),
+		Task.truncate({cascade: true}),
+		Document.truncate({cascade: true})
+		]);
+};
+
+module.exports = {
+	seedDatabase,
+	dropRecords
 };

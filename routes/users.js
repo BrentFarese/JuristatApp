@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application, Document, Index, Matter, Task, User} = require('../models');
-
-router.get('/', (req, res) => {
-	User.findAll()
-	.then(users => res.json(users.apiRepr()));
-})
+const {Application} = require('../models/application'); 
+const {Document} = require('../models/document');
+const {Matter} = require('../models/matter');
+const {Task} = require('../models/task');
+const {User} = require('../models/user');
 
 router.get('/:id', (req, res) => {
 	User.findById(req.params.id)
@@ -19,7 +18,7 @@ router.get('/:id/applications', (req, res) => {
 			model: Application,
 			as: 'applications'
 		}]})
-	.then(user => res.json({applications: user.applications.map(app => app.apiRepr())}));
+	.then(user => res.status(200).json({applications: user.applications.map(app => app.apiRepr())}));
 });
 
 router.get('/:id/matters', (req, res) => {
@@ -28,19 +27,13 @@ router.get('/:id/matters', (req, res) => {
 			model: Matter,
 			as: 'matters'
 		}]})
-	.then(user => res.json({matters: user.matters.map(matter => matter.apiRepr())}));
+	.then(user => res.status(200).json({matters: user.matters.map(matter => matter.apiRepr())}));
 });
 
 router.get('/:id/tasks', (req, res) => {
-	User.findById(req.params.id, {
-		include: [{
-			model: Task,
-			as: 'tasks'
-		}]})
-	.then(user => res.json({tasks: user.tasks.map(task => task.apiRepr())}));
-
+	let promise;
 	if (req.query.status) {
-		User.findById(req.params.id, {
+		promise = User.findById(req.params.id, {
 			include: [{
 				model: 'Task',
 				as: 'tasks',
@@ -50,7 +43,14 @@ router.get('/:id/tasks', (req, res) => {
 				}
 			}]
 		})
+	} else {
+		promise = User.findById(req.params.id, {
+			include: [{
+				model: Task,
+				as: 'tasks'
+			}]})
 	};
+	promise.then(user => res.status(200).json({tasks: user.tasks.map(task => task.apiRepr())}));
 });
 
 router.post('/', (req, res) => {

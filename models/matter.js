@@ -4,9 +4,10 @@ const Sequelize = require('Sequelize');
 
 const {sequelize} = require('../db/sequelize');
 
-const Matter = Sequelize.define('Matters', {
+const Matter = sequelize.define('Matters', {
 	id: {
 		type: Sequelize.UUID,
+		defaultValue: Sequelize.UUIDV1,
 		primaryKey: true
 	},
 	createdAt: {
@@ -32,38 +33,38 @@ const Matter = Sequelize.define('Matters', {
 	importanceLevel: {
 		type: Sequelize.INTEGER,
 		field: 'importance_level'
-	}, {
-		tableName: 'matters',
-		underscored: true,
-		classMethods: {
-			associate: function(models) {
-				Matter.hasOne(models.Application, {
-					as: 'applications',
-					onDelete: 'SET NULL'
-				});
-				Matter.hasMany(models.Task, {
-					as: 'tasks',
-					onDelete: 'cascade'
-				});
-				Matter.hasMany(models.Document, {
-					as: 'documents',
-					onDelete: 'SET NULL'
-				});
-				Matter.belongsToMany(models.User, {
-					through: 'UserMatter'
-				});
-			}
-		},
-		instanceMethods: {
-			apiRepr: function() {
-				return {
-					id: this.id,
-					firmReference: this.firmReference,
-					clientReference: this.clientReference,
-					legalType: this.legalType,
-					importanceLevel: this.importanceLevel
-				}; 
-			}
+	}
+}, {
+	tableName: 'matters',
+	underscored: true,
+	classMethods: {
+		associate: function(models) {
+			Matter.hasOne(models.Application, {
+				as: 'applications',
+				onDelete: 'SET NULL'
+			});
+			Matter.hasMany(models.Task, {
+				as: 'tasks',
+				onDelete: 'cascade'
+			});
+			Matter.hasMany(models.Document, {
+				as: 'documents',
+				onDelete: 'SET NULL'
+			});
+			Matter.belongsToMany(models.User, {
+				through: 'UserMatter'
+			});
+		}
+	},
+	instanceMethods: {
+		apiRepr: function() {
+			return {
+				id: this.id,
+				firmReference: this.firmReference,
+				clientReference: this.clientReference,
+				legalType: this.legalType,
+				importanceLevel: this.importanceLevel
+			}; 
 		}
 	}
 });

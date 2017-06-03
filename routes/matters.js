@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application, Document, Index, Matter, Task, User} = require('../models');
+const {Application} = require('../models/application'); 
+const {Document} = require('../models/document');
+const {Matter} = require('../models/matter');
+const {Task} = require('../models/task');
+const {User} = require('../models/user');
 
 router.get('/:id', (req, res) => {
 	Matter.findById(req.params.id)
@@ -75,7 +79,7 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-	f (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
+	if (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
 		const message = (
 			`Request path id (${req.params.id}) and request body id ` +
 			`(${req.body.id}) must match`);

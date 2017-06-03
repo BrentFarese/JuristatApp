@@ -7,6 +7,7 @@ const {sequelize} = require('../db/sequelize');
 const User = sequelize.define('Users', {
 	id: {
 		type: Sequelize.UUID,
+		defaultValue: Sequelize.UUIDV1,
 		primaryKey: true
 	},
 	createdAt: {
@@ -61,35 +62,35 @@ const User = sequelize.define('Users', {
 		type: Sequelize.STRING,
 		allowNull: false,
 		field: 'user_type'
-	}, {
-		tableName: 'users',
-		underscored: true, 
-		classMethods: {
-			associate: function(models) {
-				User.belongsToMany(models.Application, {
-					through: 'UserApplication'
-				});
-				User.belongsToMany(models.Matter, {
-					through: 'UserMatter'
-				});
-				User.belongsToMany(models.Task, {
-					through: 'UserTask'
-				});
-			}
-		},
-		instanceMethods: {
-			apiRepr: function() {
-				return {
-					id: this.id,
-					userName: this.userName,
-					firstName: this.firstName,
-					lastName: this.lastName,
-					password: this.password,
-					email: this.email,
-					address: this.address,
-					userType: this.userType
-				};
-			}
+	}
+}, {
+	tableName: 'users',
+	underscored: true, 
+	classMethods: {
+		associate: function(models) {
+			User.belongsToMany(models.Application, {
+				through: 'UserApplication'
+			});
+			User.belongsToMany(models.Matter, {
+				through: 'UserMatter'
+			});
+			User.belongsToMany(models.Task, {
+				through: 'UserTask'
+			});
+		}
+	},
+	instanceMethods: {
+		apiRepr: function() {
+			return {
+				id: this.id,
+				userName: this.userName,
+				firstName: this.firstName,
+				lastName: this.lastName,
+				password: this.password,
+				email: this.email,
+				address: this.address,
+				userType: this.userType
+			};
 		}
 	}
 });
