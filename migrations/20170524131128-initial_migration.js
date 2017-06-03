@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
 
-        queryInterface.sequelize.query('CREATE EXTENSION "uuid-ossp"')
+        queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
         .then(() => { 
 
           queryInterface.createTable(

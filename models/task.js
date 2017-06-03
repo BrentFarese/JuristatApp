@@ -7,7 +7,6 @@ const {sequelize} = require('../db/sequelize');
 const Task = sequelize.define('Tasks', {
 	id: {
 		type: Sequelize.UUID,
-		defaultValue: Sequelize.UUIDV1,
 		primaryKey: true
 	},
 	createdAt: {

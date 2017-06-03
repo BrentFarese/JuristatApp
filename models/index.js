@@ -12,8 +12,11 @@
 // `.associate` called on them.
 
 // Any time you create a new model for an app, import it here
-const {Application, Document, Matter, Task, User} = require('../models');
-
+const {Application} = require('../models/application'); 
+const {Document} = require('../models/document');
+const {Matter} = require('../models/matter');
+const {Task} = require('../models/task');
+const {User} = require('../models/user');
 
 // All models you want to expose to other modules should go here
 const db = {

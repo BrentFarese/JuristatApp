@@ -21,6 +21,7 @@ after(function() {
 
 function generateFakeUser() {
 	const fakeUser = {
+		id: faker.random.uuid(),
 		userName: faker.internet.userName(),
 		firstName: faker.name.firstName(),
 		lastName: faker.name.lastName(),
@@ -37,7 +38,8 @@ function generateFakeUser() {
 
 function generateFakeApplication() {
 	const fakeApplication = {
-		serialNumber: faker.random.uuid(),
+		id: faker.random.uuid(),
+		serialNumber: faker.random.number(),
 		title: faker.random.words()
 	};
 	return fakeApplication;
@@ -45,24 +47,27 @@ function generateFakeApplication() {
 
 function generateFakeMatter() {
 	const fakeMatter = {
-		firmReference: faker.random.uuid(),
-		clientReference: faker.random.uuid(),
+		id: faker.random.uuid(),
+		firmReference: faker.random.alphaNumeric(),
+		clientReference: faker.random.alphaNumeric(),
 		legalType: faker.random.word(),
-		importanceLevel: fake.random.number()
+		importanceLevel: faker.random.number()
 	};
 	return fakeMatter;
 };
 
 function generateFakeDocument() {
 	const fakeDocument = {
+		id: faker.random.uuid(),
 		documentType: faker.random.word(),
 		url: faker.internet.url()
 	};
-
+	return fakeDocument;
 };
 
 function generateFakeTask() {
 	const fakeTask = {
+		id: faker.random.uuid(),
 		completed: faker.random.boolean(),
 		taskDescription: faker.lorem.words(),
 		dueDate: faker.date.future()
@@ -71,26 +76,31 @@ function generateFakeTask() {
 };
 
 function createRecords() {
-	let userId, documentId, applicationId, taskId
-	User.create(generateFakeUser())
+	let userId;
+	let documentId;
+	let applicationId;
+	let taskId;
+	let matterId;
+	return User.create(generateFakeUser())
 	.then(user => {
 		userId = user.id;
-		Matter.create(generateFakeMatter());
+		return Matter.create(generateFakeMatter());
 	})
 	.then(matter => {
 		matterId = matter.id;
-		Document.create(generateFakeDocument());
+		return Document.create(generateFakeDocument());
 	})
 	.then(document => {
 		documentId = document.id;
-		Application.create(generateFakeApplication());
+		return Application.create(generateFakeApplication());
 	})
 	.then(application => {
 		applicationId = application.id;
-		Task.create(generateFakeTask());
+		return Task.create(generateFakeTask());
 	})
 	.then(task => {
 		taskId = task.id;
+		console.log(userId, documentId, applicationId, taskId, matterId);
 		User.upsert({
 			applicationId: applicationId,
 			matterId: matterId,
@@ -119,7 +129,7 @@ function createRecords() {
 			documentId: documentId,
 			taskId: taskId
 		});
-	})
+	});
 };
 
 function seedDatabase(num) {
