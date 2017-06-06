@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.transaction(t => {
+    return queryInterface.sequelize.transaction(() => {
       return Promise.all([
 
         queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
@@ -12,8 +12,9 @@ module.exports = {
             'users',
             {
               id: {
-                type: Sequelize.UUID,
-                primaryKey: true
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
               },
               createdAt: {
                 type: Sequelize.DATE
@@ -60,9 +61,6 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false 
               }
-            }, 
-            {
-              transaction: t
             })
           .then(() => { 
             queryInterface.addIndex('users', ['email'], {
@@ -79,8 +77,9 @@ module.exports = {
               'applications', 
               {
                 id: {
-                  type: Sequelize.UUID,
-                  primaryKey: true
+                  type: Sequelize.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
                 },
                 createdAt: {
                   type: Sequelize.DATE
@@ -97,7 +96,7 @@ module.exports = {
                   type: Sequelize.TEXT,
                 },
                 userId: {
-                  type: Sequelize.UUID,
+                  type: Sequelize.INTEGER,
                   references: {
                     model: 'users',
                     key: 'id'
@@ -114,8 +113,9 @@ module.exports = {
               queryInterface.createTable(
                 'matters', {
                   id: {
-                    type: Sequelize.UUID,
-                    primaryKey: true
+                    type: Sequelize.INTEGER,
+                    primaryKey: true,
+                    autoIncrement: true
                   },
                   createdAt: {
                     type: Sequelize.DATE
@@ -136,7 +136,7 @@ module.exports = {
                     type: Sequelize.INTEGER
                   },
                   applicationId: {
-                    type: Sequelize.UUID,
+                    type: Sequelize.INTEGER,
                     references: {
                       model: 'applications',
                       key: 'id'
@@ -162,8 +162,9 @@ module.exports = {
                 queryInterface.createTable(
                   'tasks', {
                     id: {
-                      type: Sequelize.UUID,
-                      primaryKey: true
+                      type: Sequelize.INTEGER,
+                      primaryKey: true,
+                      autoIncrement: true
                     },
                     createdAt: {
                       type: Sequelize.DATE
@@ -185,7 +186,7 @@ module.exports = {
                       allowNull: false
                     },
                     userId: {
-                      type: Sequelize.UUID,
+                      type: Sequelize.INTEGER,
                       references: {
                         model: 'users',
                         key: 'id'
@@ -193,7 +194,7 @@ module.exports = {
                       onDelete: 'SET NULL'
                     },
                     matterId: {
-                      type: Sequelize.UUID,
+                      type: Sequelize.INTEGER,
                       references: {
                         model: 'matters',
                         key: 'id'
@@ -213,8 +214,9 @@ module.exports = {
                 queryInterface.createTable(
                   'documents', {
                     id: {
-                      type: Sequelize.UUID,
-                      primaryKey: true
+                      type: Sequelize.INTEGER,
+                      primaryKey: true,
+                      autoIncrement: true
                     },
                     createdAt: {
                       type: Sequelize.DATE
@@ -231,7 +233,7 @@ module.exports = {
                       allowNull: false
                     },
                     applicationId: {
-                      type: Sequelize.UUID,
+                      type: Sequelize.INTEGER,
                       references: {
                         model: 'applications',
                         key: 'id'
@@ -239,7 +241,7 @@ module.exports = {
                       onDelete: 'SET NULL'
                     },
                     taskId: {
-                      type: Sequelize.UUID,
+                      type: Sequelize.INTEGER,
                       references: {
                         model: 'tasks',
                         key: 'id'
@@ -247,7 +249,7 @@ module.exports = {
                       onDelete: 'SET NULL'
                     },
                     matterId: {
-                      type: Sequelize.UUID,
+                      type: Sequelize.INTEGER,
                       references: {
                         model: 'matters',
                         key: 'id'
@@ -266,7 +268,7 @@ module.exports = {
                   queryInterface.createTable(
                     'UserTask', {
                       taskId: {
-                        type: Sequelize.UUID,
+                        type: Sequelize.INTEGER,
                         references: {
                           model: 'tasks', 
                           key: 'id'
@@ -274,7 +276,7 @@ module.exports = {
                         onDelete: 'cascade' 
                       },
                       userId: {
-                        type: Sequelize.UUID,
+                        type: Sequelize.INTEGER,
                         references: {
                           model: 'users',
                           key: 'id'
@@ -282,14 +284,14 @@ module.exports = {
                         onDelete: 'cascade'
                       }
                     });
-                  })
                 })
               })
-            })
-          })
-        ])
-      })
-    },
+})
+})
+})
+])
+})
+},
 
 
 down: (queryInterface, Sequelize) => {

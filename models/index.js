@@ -17,6 +17,7 @@ const {Document} = require('../models/document');
 const {Matter} = require('../models/matter');
 const {Task} = require('../models/task');
 const {User} = require('../models/user');
+const {UserApplication} = require('../models/user_application');
 
 // All models you want to expose to other modules should go here
 const db = {
@@ -24,7 +25,8 @@ const db = {
 	Document,
 	Matter,
 	Task,
-	User
+	User, 
+	UserApplication
 };
 
 Object.keys(db).forEach(function(modelName) {
@@ -35,4 +37,6 @@ Object.keys(db).forEach(function(modelName) {
 
 // the outside world should only get access to our models
 // via this single `db` object.
-module.exports = db;
+module.exports = {
+	db
+};

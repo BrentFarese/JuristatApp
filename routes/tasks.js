@@ -1,19 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application} = require('../models/application'); 
-const {Document} = require('../models/document');
-const {Matter} = require('../models/matter');
-const {Task} = require('../models/task');
-const {User} = require('../models/user');
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	Task.findById(req.params.id)
+	db.Task.findById(req.params.id)
 	.then(task => res.status(200).json(task.apiRepr()));
 });
 
 router.get(':id/users', (req, res) => {
-	Task.findById(req.params.id, {
+	db.Task.findById(req.params.id, {
 		include: [{
 			model: User,
 			as: 'users'
@@ -23,7 +19,7 @@ router.get(':id/users', (req, res) => {
 });
 
 router.get(':id/documents', (req, res) => {
-	Task.findById(req.params.id, {
+	db.Task.findById(req.params.id, {
 		include: [{
 			model: Document,
 			as: 'documents'
@@ -33,7 +29,7 @@ router.get(':id/documents', (req, res) => {
 });
 
 router.get(':id/applications', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Application,
 			as: 'applications'
@@ -43,7 +39,7 @@ router.get(':id/applications', (req, res) => {
 });
 
 router.get(':id/matters', (req, res) => {
-	Task.findById(req.params.id, {
+	db.Task.findById(req.params.id, {
 		include: [{
 			model: Matter,
 			as: 'matters'
@@ -64,7 +60,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Task.create({
+	return db.Task.create({
 		completed: req.body.completed,
 		taskDescription: req.body.taskDescription,
 		dueDate: req.body.dueDate
@@ -94,7 +90,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return Task.update(newTask, {
+	return db.Task.update(newTask, {
 		where: {
 			id: req.body.id
 		}
@@ -107,7 +103,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Task
+	return db.Task
 	.destroy({
 		where: {
 			id: req.params.id

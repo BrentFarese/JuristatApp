@@ -4,12 +4,11 @@ const faker = require('faker');
 const should = chai.should();
 const app = require('../app');
 
-const {Application} = require('../models/application'); 
-const {Document} = require('../models/document');
-const {Matter} = require('../models/matter');
-const {Task} = require('../models/task');
-const {User} = require('../models/user');
-const {seedDatabase, dropRecords} = require('./helpers');
+const {db} = require('../models');
+
+const {seedDatabase} = require('./helpers');
+const {dropRecords} = require('./helpers');
+
 
 chai.use(chaiHttp);
 
@@ -25,7 +24,7 @@ describe('users routes', function() {
 	describe('GET /users/:id', function() {
 		it('should return user by ID', function() {
 			let user;
-			return User.findOne()
+			return db.User.findOne()
 			.then(function(_user) {
 				user = _user;
 				return chai.request(app)
@@ -48,29 +47,32 @@ describe('users routes', function() {
 		});
 	});
 
-	// describe('GET /users/:id/applications', function() {
-	// 	it('should return all applications for a user', function() {
-	// 		return User.findOne({
-	// 			include: [{
-	// 				model: Application,
-	// 				through: 'UserApplication'
-	// 			}]
-	// 		})
-	// 		.then(user => {
-	// 			return chai.request(app)
-	// 			.get(`/users/${this.user.id}/applications`);
-	// 		})
-	// 		.then(res => {
-	// 			res.should.have.status(200);
-	// 			res.body.id.should.equal(this.user.id);
-	// 			res.body.applications.forEach(application => {
-	// 				application.should.be.a('object');
-	// 				application.should.include.keys('id', 'createdAt', 'updatedAt', 'serialNumber', 'title');
-	// 			});
-	// 			this.user.applications.map(application => application.id).should.deep.equal(res.body.applications.map(application => application.id));
-	// 		});
-	// 	});
-	// });
+	describe('GET /users/:id/applications', function() {
+		it('should return all applications for a user', function() {
+			let user;
+			return db.User.findOne({
+				include: [{
+					model: db.Application,
+					as: 'applications',
+					through: {}
+				}]
+			})
+			.then(_user => {
+				let user = _user;
+				return chai.request(app)
+				.get(`/users/${user.id}/applications`);
+			})
+			.then(res => {
+				res.should.have.status(200);
+				res.body.id.should.equal(user.id);
+				res.body.applications.forEach(application => {
+					application.should.be.a('object');
+					application.should.include.keys('id', 'createdAt', 'updatedAt', 'serialNumber', 'title');
+				});
+				user.applications.map(application => application.id).should.deep.equal(res.body.applications.map(application => application.id));
+			});
+		});
+	});
 
 	// describe('GET /users/:id/matters', function() {
 	// 	it('should return all matters for a user', function () {
@@ -119,4 +121,102 @@ describe('users routes', function() {
 	// 		});
 	// 	});
 	// });
+
+	describe('POST /', function() {
+		it('should add a user', function() {
+			const newUser = {
+				id: faker.random.uuid(),
+				userName: faker.internet.userName(),
+				firstName: faker.name.firstName(),
+				lastName: faker.name.lastName(),
+				password: faker.random.word(),
+				email: faker.internet.email(),
+				streetAddress: faker.address.streetAddress(),
+				state: faker.address.state(),
+				postalCode: faker.address.zipCode(),
+				country: faker.address.country(),
+				userType: faker.internet.userAgent()
+			};
+
+			return chai.request(app).post('/users').send(newUser);
+
+			return db.User.findById(newUser.id)
+			.then(function(res) {
+				res.should.have.status(201);
+				res.should.be.json;
+				res.should.be.a('object');
+				res.should.include.keys('id', 'createdAt', 'updatedAt', 'userName', 'firstName', 'lastName', 'password', 'email', 'streetAddress', 'state', 'postalCode', 'country', 'userType');
+				res.body.id.should.not.be.null;
+				res.body.id.should.equal(newUser.id);
+				res.body.userName.should.equal(newUser.userName);
+				res.body.firstName.should.equal(newUser.firstName);
+				res.body.lastName.should.equal(newUser.lastName);
+				res.body.password.should.equal(newUser.password);
+				res.body.email.should.equal(newUser.email);
+				res.body.streetAddress.should.equal(newUser.streetAddress);
+				res.body.state.should.equal(newUser.state);
+				res.body.postalCode.should.equal(newUser.postalCode);
+				res.body.country.should.equal(newUser.country);
+				res.body.userType.should.equal(newUser.userType);
+			});
+		});
+	});
+
+	describe('PUT /:id', function() {
+		it('should update a user by id', function() {
+			let user;
+			updatedFields = {
+				userName: faker.internet.userName(),
+				firstName: faker.name.firstName(),
+				lastName: faker.name.lastName(),
+				password: faker.random.word(),
+				email: faker.internet.email(),
+				streetAddress: faker.address.streetAddress(),
+				state: faker.address.state(),
+				postalCode: faker.address.zipCode(),
+				country: faker.address.country(),
+				userType: faker.internet.userAgent()
+			};
+
+			db.User.findOne()
+			.then(function(_user) {
+				user = _user;
+				return chai.request(app).put(`/users/${user.id}`).send(updatedFields)
+			})
+			.then(function(res) {
+				res.should.have.status(204);
+				return User.findById(user.id);
+			})
+			.then(function(updatedUser) {
+				updatedUser.userName.should.equal(updatedFields.userName);
+				updatedUser.firstName.should.equal(updatedFields.firstName);
+				updatedUser.lastName.should.equal(updatedFields.lastName);
+				updatedUser.password.should.equal(updatedFields.password);
+				updatedUser.email.should.equal(updatedFields.email);
+				updatedUser.streetAddress.should.equal(updatedFields.streetAddress);
+				updatedUser.state.should.equal(updatedFields.state);
+				updatedUser.postalCode.should.equal(updatedFields.postalCode);
+				updatedUser.country.should.equal(updatedFields.country);
+				updatedUser.userType.should.equal(updatedFields.userType);
+			});
+		});
+	});
+
+	describe('DELETE /:id', function() {
+		it('should delete a user by id', function() {
+			let user;
+			return db.User.findOne()
+			.then(function(_user) {
+				user = _user;
+				return chai.request(app).delete(`/users/${user.id}`);
+			})
+			.then(function(res) {
+				res.should.have.status(204);
+				return db.User.findById(user.id);
+			})
+			.then(function(user) {
+				should.not.exist(user);
+			});
+		});
+	});
 });

@@ -6,8 +6,9 @@ const {sequelize} = require('../db/sequelize');
 
 const Application = sequelize.define('Applications', {
 	id: {
-		type: Sequelize.UUID,
-		primaryKey: true
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
 	},
 	createdAt: {
 		type: Sequelize.DATE,
@@ -43,7 +44,7 @@ const Application = sequelize.define('Applications', {
 				onDelete: 'SET NULL'
 			});
 			Application.belongsToMany(models.User, {
-				through: 'UserApplication'
+				through: models.UserApplication
 			});
 		}
 	}, 

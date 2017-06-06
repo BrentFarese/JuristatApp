@@ -6,8 +6,9 @@ const {sequelize} = require('../db/sequelize');
 
 const Document = sequelize.define('Documents', {
 	id: {
-		type: Sequelize.UUID,
-		primaryKey: true
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
 	},
 	createdAt: {
 		type: Sequelize.DATE,

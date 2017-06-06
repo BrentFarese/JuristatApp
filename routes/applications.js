@@ -1,19 +1,16 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application} = require('../models/application'); 
-const {Document} = require('../models/document');
-const {Matter} = require('../models/matter');
-const {Task} = require('../models/task');
-const {User} = require('../models/user');
+const {db} = require('../models');
+
 
 router.get('/:id', (req, res) => {
-	Application.findById(req.params.id)
+	db.Application.findById(req.params.id)
 	.then(application => res.status(200).json(application.apiRepr()));
 });
 
 router.get(':id/tasks', (req, res) => {
-	Application.findById(req.params.id, {
+	db.Application.findById(req.params.id, {
 		include: [{
 			model: Task,
 			as: 'tasks'
@@ -22,7 +19,7 @@ router.get(':id/tasks', (req, res) => {
 });
 
 router.get(':id/documents', (req, res) => {
-	Application.findById(req.params.id, {
+	db.Application.findById(req.params.id, {
 		include: [{
 			model: Document,
 			as: 'documents'
@@ -42,7 +39,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Application.create({
+	return db.Application.create({
 		serialNumber: req.body.serialNumber,
 		title: req.body.title
 	})
@@ -71,7 +68,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return Application.update(newApplication, {
+	return db.Application.update(newApplication, {
 		where: {
 			id: req.body.id
 		}
@@ -84,7 +81,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Application
+	return db.Application
 	.destroy({
 		where: {
 			id: req.params.id

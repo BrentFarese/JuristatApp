@@ -6,8 +6,9 @@ const {sequelize} = require('../db/sequelize');
 
 const User = sequelize.define('Users', {
 	id: {
-		type: Sequelize.UUID,
-		primaryKey: true
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
 	},
 	createdAt: {
 		type: Sequelize.DATE,
@@ -87,7 +88,10 @@ const User = sequelize.define('Users', {
 				lastName: this.lastName,
 				password: this.password,
 				email: this.email,
-				address: this.address,
+				streetAddress: this.streetAddress,
+				state: this.state,
+				postalCode: this.postalCode,
+				country: this.country,
 				userType: this.userType
 			};
 		}

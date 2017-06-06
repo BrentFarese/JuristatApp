@@ -1,19 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application} = require('../models/application'); 
-const {Document} = require('../models/document');
-const {Matter} = require('../models/matter');
-const {Task} = require('../models/task');
-const {User} = require('../models/user');
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	Matter.findById(req.params.id)
+	db.Matter.findById(req.params.id)
 	.then(matter => res.status(200).json(matter.apiRepr()));
 });
 
 router.get('/:id/tasks', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Task,
 			as: 'tasks'
@@ -23,7 +19,7 @@ router.get('/:id/tasks', (req, res) => {
 });
 
 router.get(':id/users', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: User,
 			as: 'users'
@@ -33,7 +29,7 @@ router.get(':id/users', (req, res) => {
 });
 
 router.get(':id/documents', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Document,
 			as: 'documents'
@@ -43,7 +39,7 @@ router.get(':id/documents', (req, res) => {
 });
 
 router.get(':id/applications', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Application,
 			as: 'applications'
@@ -64,7 +60,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Matter.create({
+	return db.Matter.create({
 		firmReference: req.body.firmReference,
 		clientReference: req.body.clientReference,
 		legalType: req.body.legalType,
@@ -95,7 +91,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return Matter.update(newMatter, {
+	return db.Matter.update(newMatter, {
 		where: {
 			id: req.body.id
 		}
@@ -108,7 +104,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Matter
+	return db.Matter
 	.destroy({
 		where: {
 			id: req.params.id

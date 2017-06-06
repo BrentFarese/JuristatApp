@@ -5,7 +5,7 @@ module.exports = {
    queryInterface.createTable(
     'UserMatter', {
       matterId: {
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
         references: {
           model: 'matters',
           key: 'id'
@@ -13,7 +13,7 @@ module.exports = {
         onDelete: 'cascade'
       },
       userId: {
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
         references: {
           model: 'users',
           key: 'id'
@@ -29,7 +29,7 @@ module.exports = {
    queryInterface.createTable(
     'UserApplication', {
       applicationId: {
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
         references: {
           model: 'applications',
           key: 'id'
@@ -37,7 +37,7 @@ module.exports = {
         onDelete: 'cascade'
       },
       userId: {
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
         references: {
           model: 'users',
           key: 'id'

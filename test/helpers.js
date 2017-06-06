@@ -3,11 +3,7 @@ const faker = require('faker');
 const {PORT} = require('../config');
 const {runServer, closeServer} = require('../server');
 const {sequelize} = require('../db/sequelize');
-const {Application} = require('../models/application'); 
-const {Document} = require('../models/document');
-const {Matter} = require('../models/matter');
-const {Task} = require('../models/task');
-const {User} = require('../models/user');
+const {db} = require('../models');
 
 before(function() {
 	return sequelize
@@ -19,117 +15,77 @@ after(function() {
 	return closeServer();
 });
 
-function generateFakeUser() {
-	const fakeUser = {
-		id: faker.random.uuid(),
-		userName: faker.internet.userName(),
-		firstName: faker.name.firstName(),
-		lastName: faker.name.lastName(),
-		password: faker.random.word(),
-		email: faker.internet.email(),
-		streetAddress: faker.address.streetAddress(),
-		state: faker.address.state(),
-		postalCode: faker.address.zipCode(),
-		country: faker.address.country(),
-		userType: faker.internet.userAgent()
-	};
-	return fakeUser;
+const fakeUser = {
+	userName: faker.internet.userName(),
+	firstName: faker.name.firstName(),
+	lastName: faker.name.lastName(),
+	password: faker.random.word(),
+	email: faker.internet.email(),
+	streetAddress: faker.address.streetAddress(),
+	state: faker.address.state(),
+	postalCode: faker.address.zipCode(),
+	country: faker.address.country(),
+	userType: faker.internet.userAgent()
 };
 
-function generateFakeApplication() {
-	const fakeApplication = {
-		id: faker.random.uuid(),
-		serialNumber: faker.random.number(),
-		title: faker.random.words()
-	};
-	return fakeApplication;
+const fakeApplication = {
+	serialNumber: faker.random.number(),
+	title: faker.random.words()
 };
 
-function generateFakeMatter() {
-	const fakeMatter = {
-		id: faker.random.uuid(),
-		firmReference: faker.random.alphaNumeric(),
-		clientReference: faker.random.alphaNumeric(),
-		legalType: faker.random.word(),
-		importanceLevel: faker.random.number()
-	};
-	return fakeMatter;
+const fakeMatter = {
+	firmReference: faker.random.alphaNumeric(),
+	clientReference: faker.random.alphaNumeric(),
+	legalType: faker.random.word(),
+	importanceLevel: faker.random.number()
 };
 
-function generateFakeDocument() {
-	const fakeDocument = {
-		id: faker.random.uuid(),
-		documentType: faker.random.word(),
-		url: faker.internet.url()
-	};
-	return fakeDocument;
+const fakeDocument = {
+	documentType: faker.random.word(),
+	url: faker.internet.url()
 };
 
-function generateFakeTask() {
-	const fakeTask = {
-		id: faker.random.uuid(),
-		completed: faker.random.boolean(),
-		taskDescription: faker.lorem.words(),
-		dueDate: faker.date.future()
-	};
-	return fakeTask;
+const fakeTask = {
+	completed: faker.random.boolean(),
+	taskDescription: faker.lorem.words(),
+	dueDate: faker.date.future()
 };
 
 function createRecords() {
-	let userId;
-	let documentId;
-	let applicationId;
-	let taskId;
-	let matterId;
-	return User.create(generateFakeUser())
-	.then(user => {
-		userId = user.id;
-		return Matter.create(generateFakeMatter());
+	let user;
+	let document;
+	let application;
+	let task;
+	let matter;
+	db.User.create(fakeUser)
+	//Adding a fakeMatter, needs keys userId.
+	.then(_user => {
+		user = _user;
+		fakeMatter.userId = user.id;
+		return db.Matter.create(fakeMatter);
 	})
-	.then(matter => {
-		matterId = matter.id;
-		return Document.create(generateFakeDocument());
+	//Adding a fakeApplication with userId and matterId.
+	.then(_matter => {
+		matter = _matter;
+		fakeApplication.userId = user.id;
+		fakeApplication.matterId = matter.id;
+		return db.Application.create(fakeApplication);
 	})
-	.then(document => {
-		documentId = document.id;
-		return Application.create(generateFakeApplication());
+	//Adding a document with applicationId.
+	.then(_application => {
+		application = _application;
+		user.addApplication([application]);
+		fakeDocument.applicationId = application.id;
+		return db.Document.create(fakeDocument);
 	})
-	.then(application => {
-		applicationId = application.id;
-		return Task.create(generateFakeTask());
+	//Adding a task with userId, applicationId, and matterId.
+	.then(_document => {
+		document = _document;
+		fakeTask.userId = user.id;
+		fakeTask.applicationId = application.id;
+		fakeTask.matterId = matter.id;
+		return db.Task.create(fakeTask);
 	})
-	.then(task => {
-		taskId = task.id;
-		console.log(userId, documentId, applicationId, taskId, matterId);
-		User.upsert({
-			applicationId: applicationId,
-			matterId: matterId,
-			taskId: taskId
-		});
-		Matter.upsert({
-			userId: userId,
-			documentId: documentId,
-			applicationId: applicationId,
-			taskId: taskId
-		});
-		Document.upsert({
-			applicationId: applicationId,
-			taskId: taskId,
-			matterId: matterId
-		});
-		Application.upsert({
-			matterId: matterId,
-			userId: userId,
-			documentId: documentId,
-			taskId: taskId
-		});
-		Task.upsert({
-			matterId: matterId,
-			userId: userId,
-			documentId: documentId,
-			taskId: taskId
-		});
-	});
 };
 
 function seedDatabase(num) {
@@ -140,11 +96,11 @@ function seedDatabase(num) {
 
 function dropRecords() {
 	return Promise.all([
-		User.truncate({cascade: true}),
-		Application.truncate({cascade: true}),
-		Matter.truncate({cascade: true}),
-		Task.truncate({cascade: true}),
-		Document.truncate({cascade: true})
+		db.User.truncate({cascade: true}),
+		db.Application.truncate({cascade: true}),
+		db.Matter.truncate({cascade: true}),
+		db.Task.truncate({cascade: true}),
+		db.Document.truncate({cascade: true})
 		]);
 };
 

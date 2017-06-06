@@ -1,28 +1,25 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application} = require('../models/application'); 
-const {Document} = require('../models/document');
-const {Matter} = require('../models/matter');
-const {Task} = require('../models/task');
-const {User} = require('../models/user');
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	User.findById(req.params.id)
+	db.User.findById(req.params.id)
 	.then(user => res.status(200).json(user.apiRepr()));
 });
 
 router.get('/:id/applications', (req, res) => {
-	User.findById(req.params.id, {
+	db.User.findById(req.params.id, {
 		include: [{
 			model: Application,
-			as: 'applications'
+			as: 'applications',
+			through: {}
 		}]})
 	.then(user => res.status(200).json({applications: user.applications.map(app => app.apiRepr())}));
 });
 
 router.get('/:id/matters', (req, res) => {
-	User.findById(req.params.id, {
+	db.User.findById(req.params.id, {
 		include: [{
 			model: Matter,
 			as: 'matters'
@@ -33,7 +30,7 @@ router.get('/:id/matters', (req, res) => {
 router.get('/:id/tasks', (req, res) => {
 	let promise;
 	if (req.query.status) {
-		promise = User.findById(req.params.id, {
+		promise = db.User.findById(req.params.id, {
 			include: [{
 				model: 'Task',
 				as: 'tasks',
@@ -44,7 +41,7 @@ router.get('/:id/tasks', (req, res) => {
 			}]
 		})
 	} else {
-		promise = User.findById(req.params.id, {
+		promise = db.User.findById(req.params.id, {
 			include: [{
 				model: Task,
 				as: 'tasks'
@@ -65,7 +62,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return User.create({
+	return db.User.create({
 		userName: req.body.userName,
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
@@ -102,7 +99,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return User.update(newUser, {
+	return db.User.update(newUser, {
 		where: {
 			id: req.body.id
 		}
@@ -115,7 +112,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return User
+	return db.User
 	.destroy({
 		where: {
 			id: req.params.id
