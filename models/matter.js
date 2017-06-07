@@ -39,7 +39,7 @@ const Matter = sequelize.define('Matters', {
 	underscored: true,
 	classMethods: {
 		associate: function(models) {
-			Matter.hasOne(models.Application, {
+			Matter.belongsTo(models.Application, {
 				as: 'applications',
 				onDelete: 'SET NULL'
 			});

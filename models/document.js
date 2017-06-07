@@ -32,15 +32,15 @@ const Document = sequelize.define('Documents', {
 	underscored: true,
 	classMethods: {
 		associate: function(models) {
-			Document.hasOne(models.Task, {
+			Document.belongsTo(models.Task, {
 				as: 'tasks',
 				onDelete: 'SET NULL'
 			});
-			Document.hasOne(models.Application, {
+			Document.belongsTo(models.Application, {
 				as: 'applications',
 				onDelete: 'SET NULL'
 			});
-			Document.hasOne(models.Matter, {
+			Document.belongsTo(models.Matter, {
 				as: 'matters',
 				onDelete: 'SET NULL'
 			});

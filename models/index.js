@@ -30,9 +30,9 @@ const db = {
 };
 
 Object.keys(db).forEach(function(modelName) {
-	if (modelName.associate) {
-		modelName.associate(db);
-	}
+    if ('associate' in db[modelName]) {
+        db[modelName].associate(db);
+    }
 });
 
 // the outside world should only get access to our models

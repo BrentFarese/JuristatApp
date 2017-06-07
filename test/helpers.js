@@ -62,29 +62,29 @@ function createRecords() {
 	.then(_user => {
 		user = _user;
 		fakeMatter.userId = user.id;
-		return db.Matter.create(fakeMatter);
-	})
-	//Adding a fakeApplication with userId and matterId.
-	.then(_matter => {
-		matter = _matter;
-		fakeApplication.userId = user.id;
-		fakeApplication.matterId = matter.id;
-		return db.Application.create(fakeApplication);
-	})
-	//Adding a document with applicationId.
-	.then(_application => {
-		application = _application;
-		user.addApplication([application]);
-		fakeDocument.applicationId = application.id;
-		return db.Document.create(fakeDocument);
-	})
-	//Adding a task with userId, applicationId, and matterId.
-	.then(_document => {
-		document = _document;
-		fakeTask.userId = user.id;
-		fakeTask.applicationId = application.id;
-		fakeTask.matterId = matter.id;
-		return db.Task.create(fakeTask);
+		return db.Matter.create(fakeMatter)
+		//Adding a fakeApplication with userId and matterId.
+		.then(_matter => {
+			matter = _matter;
+			fakeApplication.userId = user.id;
+			fakeApplication.matterId = matter.id;
+			return db.Application.create(fakeApplication)
+			//Adding a document with applicationId.
+			.then(_application => {
+				application = _application;
+				user.addApplications([application]);
+				fakeDocument.applicationId = application.id;
+				return db.Document.create(fakeDocument)
+				//Adding a task with userId, applicationId, and matterId.
+				.then(_document => {
+					document = _document;
+					fakeTask.userId = user.id;
+					fakeTask.applicationId = application.id;
+					fakeTask.matterId = matter.id;
+					return db.Task.create(fakeTask);
+				})
+			})
+		})
 	})
 };
 
@@ -100,7 +100,8 @@ function dropRecords() {
 		db.Application.truncate({cascade: true}),
 		db.Matter.truncate({cascade: true}),
 		db.Task.truncate({cascade: true}),
-		db.Document.truncate({cascade: true})
+		db.Document.truncate({cascade: true}),
+		db.UserApplication.truncate({cascade: true})
 		]);
 };
 

@@ -42,11 +42,11 @@ const Task = sequelize.define('Tasks', {
 				as: 'documents',
 				onDelete: 'SET NULL'
 			});
-			Task.hasOne(models.Matter, {
+			Task.belongsTo(models.Matter, {
 				as: 'matters',
 				onDelete: 'SET NULL'
 			});
-			Task.hasOne(models.Application, {
+			Task.belongsTo(models.Application, {
 				as: 'applications',
 				onDelete: 'SET NULL'
 			});
