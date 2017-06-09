@@ -10,18 +10,24 @@ router.get('/:id', (req, res) => {
 
 router.get('/:id/applications', (req, res) => {
 	db.User.findById(req.params.id, {
-		include: [{
-			model: Application,
-			as: 'applications',
-			through: {}
-		}]})
-	.then(user => res.status(200).json({applications: user.applications.map(app => app.apiRepr())}));
+		// include: [{
+		// 	model: db.Application,
+		// 	as: 'applications',
+		// 	through: {}
+		// }]
+	})
+	.then(user => {
+		user.getApplications()
+		.then(applications => {
+			res.status(200).json({applications: applications.map(app => app.apiRepr())});
+		})
+	})
 });
 
 router.get('/:id/matters', (req, res) => {
 	db.User.findById(req.params.id, {
 		include: [{
-			model: Matter,
+			model: db.Matter,
 			as: 'matters'
 		}]})
 	.then(user => res.status(200).json({matters: user.matters.map(matter => matter.apiRepr())}));
@@ -32,7 +38,7 @@ router.get('/:id/tasks', (req, res) => {
 	if (req.query.status) {
 		promise = db.User.findById(req.params.id, {
 			include: [{
-				model: 'Task',
+				model: db.Task,
 				as: 'tasks',
 				through: {
 					attributes: ['completed', 'taskDescription', 'dueDate'],
@@ -43,7 +49,7 @@ router.get('/:id/tasks', (req, res) => {
 	} else {
 		promise = db.User.findById(req.params.id, {
 			include: [{
-				model: Task,
+				model: db.Task,
 				as: 'tasks'
 			}]})
 	};

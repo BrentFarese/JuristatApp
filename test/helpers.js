@@ -72,8 +72,8 @@ function createRecords() {
 			//Adding a document with applicationId.
 			.then(_application => {
 				application = _application;
-				user.addApplications([application]);
 				fakeDocument.applicationId = application.id;
+				user.addApplications([application]);
 				return db.Document.create(fakeDocument)
 				//Adding a task with userId, applicationId, and matterId.
 				.then(_document => {
@@ -96,12 +96,12 @@ function seedDatabase(num) {
 
 function dropRecords() {
 	return Promise.all([
+		db.UserApplication.truncate({cascade: true}),
 		db.User.truncate({cascade: true}),
 		db.Application.truncate({cascade: true}),
 		db.Matter.truncate({cascade: true}),
 		db.Task.truncate({cascade: true}),
-		db.Document.truncate({cascade: true}),
-		db.UserApplication.truncate({cascade: true})
+		db.Document.truncate({cascade: true})
 		]);
 };
 
