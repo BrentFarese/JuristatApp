@@ -5,11 +5,73 @@ module.exports = {
     return queryInterface.sequelize.transaction(() => {
       return Promise.all([
 
-        queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+        queryInterface.createTable(
+          'users',
+          {
+            id: {
+              type: Sequelize.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+            },
+            createdAt: {
+              type: Sequelize.DATE
+            },
+            updatedAt: {
+              type: Sequelize.DATE
+            },
+            userName: {
+              type: Sequelize.STRING,
+              allowNull: false,
+              unique: true 
+            },
+            firstName: {
+              type: Sequelize.STRING,
+              allowNull: false
+            },
+            lastName: {
+              type: Sequelize.STRING,
+              allowNull: false
+            },
+            password: {
+              type: Sequelize.STRING,
+              allowNull:false
+            },
+            email: {
+              type: Sequelize.STRING,
+              allowNull: false,
+              unique: true
+            },
+            streetAddress: {
+              type: Sequelize.TEXT
+            },
+            state: {
+              type: Sequelize.STRING
+            },
+            postalCode: {
+              type: Sequelize.STRING
+            },
+            country: {
+              type: Sequelize.STRING, 
+              defaultValue: 'US'
+            },
+            userType: {
+              type: Sequelize.STRING,
+              allowNull: false 
+            }
+          })
         .then(() => { 
+          queryInterface.addIndex('users', ['email'], {
+            indicesType: 'UNIQUE'
+          });
+
+          queryInterface.addIndex('users', ['userName'], {
+            indicesType: 'UNIQUE'
+          });
+
+          queryInterface.addIndex('users', ['userType']);
 
           queryInterface.createTable(
-            'users',
+            'applications', 
             {
               id: {
                 type: Sequelize.INTEGER,
@@ -22,60 +84,31 @@ module.exports = {
               updatedAt: {
                 type: Sequelize.DATE
               },
-              userName: {
-                type: Sequelize.STRING,
-                allowNull: false,
-                unique: true 
-              },
-              firstName: {
-                type: Sequelize.STRING,
-                allowNull: false
-              },
-              lastName: {
-                type: Sequelize.STRING,
-                allowNull: false
-              },
-              password: {
-                type: Sequelize.STRING,
-                allowNull:false
-              },
-              email: {
-                type: Sequelize.STRING,
+              serialNumber: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 unique: true
               },
-              streetAddress: {
-                type: Sequelize.TEXT
+              title: {
+                type: Sequelize.TEXT,
               },
-              state: {
-                type: Sequelize.STRING
-              },
-              postalCode: {
-                type: Sequelize.STRING
-              },
-              country: {
-                type: Sequelize.STRING, 
-                defaultValue: 'US'
-              },
-              userType: {
-                type: Sequelize.STRING,
-                allowNull: false 
+              userId: {
+                type: Sequelize.INTEGER,
+                references: {
+                  model: 'users',
+                  key: 'id'
+                },
+                onDelete: 'SET NULL'
               }
             })
-          .then(() => { 
-            queryInterface.addIndex('users', ['email'], {
+          .then(() => {
+            queryInterface.addIndex('applications', ['serialNumber'], {
               indicesType: 'UNIQUE'
             });
-
-            queryInterface.addIndex('users', ['userName'], {
-              indicesType: 'UNIQUE'
-            });
-
-            queryInterface.addIndex('users', ['userType']);
+            queryInterface.addIndex('applications', ['userId']);
 
             queryInterface.createTable(
-              'applications', 
-              {
+              'matters', {
                 id: {
                   type: Sequelize.INTEGER,
                   primaryKey: true,
@@ -87,31 +120,44 @@ module.exports = {
                 updatedAt: {
                   type: Sequelize.DATE
                 },
-                serialNumber: {
-                  type: Sequelize.INTEGER,
-                  allowNull: false,
-                  unique: true
+                firmReference: {
+                  type: Sequelize.STRING
                 },
-                title: {
-                  type: Sequelize.TEXT,
+                clientReference: {
+                  type: Sequelize.STRING
                 },
-                userId: {
+                legalType: {
+                  type: Sequelize.STRING
+                },
+                importanceLevel: {
+                  type: Sequelize.INTEGER
+                },
+                applicationId: {
                   type: Sequelize.INTEGER,
                   references: {
-                    model: 'users',
+                    model: 'applications',
                     key: 'id'
                   },
-                  onDelete: 'SET NULL'
+                  onDelete: 'cascade'
                 }
               })
             .then(() => {
-              queryInterface.addIndex('applications', ['serialNumber'], {
+              queryInterface.addIndex('matters', ['firmReference'], {
                 indicesType: 'UNIQUE'
               });
-              queryInterface.addIndex('applications', ['userId']);
+
+              queryInterface.addIndex('matters', ['clientReference'], {
+                indicesType: 'UNIQUE'
+              });
+
+              queryInterface.addIndex('matters', ['importanceLevel']);
+
+              queryInterface.addIndex('matters', ['applicationId'], {
+                indicesType: 'UNIQUE'
+              });
 
               queryInterface.createTable(
-                'matters', {
+                'tasks', {
                   id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true,
@@ -123,94 +169,45 @@ module.exports = {
                   updatedAt: {
                     type: Sequelize.DATE
                   },
-                  firmReference: {
-                    type: Sequelize.STRING
+                  completed: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                   },
-                  clientReference: {
-                    type: Sequelize.STRING
+                  taskDescription: {
+                    type: Sequelize.TEXT,
+                    allowNull: false
                   },
-                  legalType: {
-                    type: Sequelize.STRING
+                  dueDate: {
+                    type: Sequelize.DATE,
+                    allowNull: false
                   },
-                  importanceLevel: {
-                    type: Sequelize.INTEGER
-                  },
-                  applicationId: {
+                  userId: {
                     type: Sequelize.INTEGER,
                     references: {
-                      model: 'applications',
+                      model: 'users',
+                      key: 'id'
+                    },
+                    onDelete: 'SET NULL'
+                  },
+                  matterId: {
+                    type: Sequelize.INTEGER,
+                    references: {
+                      model: 'matters',
                       key: 'id'
                     },
                     onDelete: 'cascade'
                   }
                 })
               .then(() => {
-                queryInterface.addIndex('matters', ['firmReference'], {
-                  indicesType: 'UNIQUE'
-                });
+                queryInterface.addIndex('tasks', ['completed']);
 
-                queryInterface.addIndex('matters', ['clientReference'], {
-                  indicesType: 'UNIQUE'
-                });
+                queryInterface.addIndex('tasks', ['dueDate']);
 
-                queryInterface.addIndex('matters', ['importanceLevel']);
+                queryInterface.addIndex('tasks', ['userId']);
 
-                queryInterface.addIndex('matters', ['applicationId'], {
-                  indicesType: 'UNIQUE'
-                });
+                queryInterface.addIndex('tasks', ['matterId']);
 
-                queryInterface.createTable(
-                  'tasks', {
-                    id: {
-                      type: Sequelize.INTEGER,
-                      primaryKey: true,
-                      autoIncrement: true
-                    },
-                    createdAt: {
-                      type: Sequelize.DATE
-                    },
-                    updatedAt: {
-                      type: Sequelize.DATE
-                    },
-                    completed: {
-                      type: Sequelize.BOOLEAN,
-                      allowNull: false,
-                      defaultValue: false
-                    },
-                    taskDescription: {
-                      type: Sequelize.TEXT,
-                      allowNull: false
-                    },
-                    dueDate: {
-                      type: Sequelize.DATE,
-                      allowNull: false
-                    },
-                    userId: {
-                      type: Sequelize.INTEGER,
-                      references: {
-                        model: 'users',
-                        key: 'id'
-                      },
-                      onDelete: 'SET NULL'
-                    },
-                    matterId: {
-                      type: Sequelize.INTEGER,
-                      references: {
-                        model: 'matters',
-                        key: 'id'
-                      },
-                      onDelete: 'cascade'
-                    }
-                  })
-                .then(() => {
-                  queryInterface.addIndex('tasks', ['completed']);
-
-                  queryInterface.addIndex('tasks', ['dueDate']);
-
-                  queryInterface.addIndex('tasks', ['userId']);
-
-                  queryInterface.addIndex('tasks', ['matterId']);
-                })
                 queryInterface.createTable(
                   'documents', {
                     id: {
@@ -265,6 +262,7 @@ module.exports = {
                   queryInterface.addIndex('documents', ['taskId']);
 
                   queryInterface.addIndex('documents', ['matterId']);
+
                   queryInterface.createTable(
                     'user_tasks', {
                       taskId: {
@@ -286,12 +284,12 @@ module.exports = {
                     })
                   .then(() => {
                     queryInterface.addIndex('user_tasks', ['taskId']);
-                    queryInterface.addIndex('user_tasks', ['userId']);
+                    queryInterface.addIndex('user_tasks', ['userId'])
                   });
-                })
-              })
-})
-})
+                });
+              });
+            });
+});
 })
 ])
 })

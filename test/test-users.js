@@ -47,36 +47,6 @@ describe('users routes', function() {
 		});
 	});
 
-	// describe('GET /users/:id/applications', function() {
-	// 	it('should return all applications for a user', function() {
-	// 		let user;
-	// 		return db.User.findOne({
-	// 			// include: [{
-	// 			// 	model: db.Application,
-	// 			// 	as: 'applications'
-	// 			// 	// through: {}
-	// 			// }]
-	// 		})
-	// 		.then(_user => {
-	// 			user = _user;
-	// 			return chai.request(app)
-	// 			.get(`/users/${user.id}/applications`);
-	// 		})
-	// 		.then(res => {
-	// 			console.log(res.body);
-	// 			res.should.have.status(200);
-	// 			res.body.applications.forEach(application => {
-	// 				application.should.be.a('object');
-	// 				application.should.include.keys('id', 'serialNumber', 'title');
-	// 			});
-	// 			user.getApplications()
-	// 			.then(applications => {
-	// 				applications.map(application => application.id.should.deep.equal(res.body.applications.map(application => application.id)[0]));
-	// 			})	
-	// 		})
-	// 	});
-	// });
-
 	describe('GET /users/:id/applications', function() {
 		it('should return all applications for a user', function () {
 			let user;
