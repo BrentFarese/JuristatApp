@@ -266,7 +266,7 @@ module.exports = {
 
                   queryInterface.addIndex('documents', ['matterId']);
                   queryInterface.createTable(
-                    'UserTask', {
+                    'user_tasks', {
                       taskId: {
                         type: Sequelize.INTEGER,
                         references: {
@@ -283,7 +283,11 @@ module.exports = {
                         },
                         onDelete: 'cascade'
                       }
-                    });
+                    })
+                  .then(() => {
+                    queryInterface.addIndex('user_tasks', ['taskId']);
+                    queryInterface.addIndex('user_tasks', ['userId']);
+                  });
                 })
               })
 })

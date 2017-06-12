@@ -3,7 +3,7 @@
 module.exports = {
   up: function (queryInterface, Sequelize) {
    queryInterface.createTable(
-    'UserMatter', {
+    'user_matters', {
       matterId: {
         type: Sequelize.INTEGER,
         references: {
@@ -22,12 +22,12 @@ module.exports = {
       }
     })
    .then(() => {
-    queryInterface.addIndex('UserMatter', ['matterId']);
-    queryInterface.addIndex('UserMatter', ['userId']);
+    queryInterface.addIndex('user_matters', ['matterId']);
+    queryInterface.addIndex('user_matters', ['userId']);
   });
 
    queryInterface.createTable(
-    'UserApplication', {
+    'user_applications', {
       applicationId: {
         type: Sequelize.INTEGER,
         references: {
@@ -46,14 +46,14 @@ module.exports = {
       }
     })
    .then(() => {
-    queryInterface.addIndex('UserApplication', ['applicationId']);
-    queryInterface.addIndex('UserApplication', ['userId']);
+    queryInterface.addIndex('user_applications', ['applicationId']);
+    queryInterface.addIndex('user_applications', ['userId']);
   });
 
  },
 
  down: function (queryInterface, Sequelize) {
-  queryInterface.dropTable('UserMatter');
-  queryInterface.dropTable('UserApplication');
+  queryInterface.dropTable('user_matters');
+  queryInterface.dropTable('user_applications');
 }
 };

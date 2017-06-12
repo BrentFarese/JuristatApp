@@ -47,60 +47,86 @@ describe('users routes', function() {
 		});
 	});
 
+	// describe('GET /users/:id/applications', function() {
+	// 	it('should return all applications for a user', function() {
+	// 		let user;
+	// 		return db.User.findOne({
+	// 			// include: [{
+	// 			// 	model: db.Application,
+	// 			// 	as: 'applications'
+	// 			// 	// through: {}
+	// 			// }]
+	// 		})
+	// 		.then(_user => {
+	// 			user = _user;
+	// 			return chai.request(app)
+	// 			.get(`/users/${user.id}/applications`);
+	// 		})
+	// 		.then(res => {
+	// 			console.log(res.body);
+	// 			res.should.have.status(200);
+	// 			res.body.applications.forEach(application => {
+	// 				application.should.be.a('object');
+	// 				application.should.include.keys('id', 'serialNumber', 'title');
+	// 			});
+	// 			user.getApplications()
+	// 			.then(applications => {
+	// 				applications.map(application => application.id.should.deep.equal(res.body.applications.map(application => application.id)[0]));
+	// 			})	
+	// 		})
+	// 	});
+	// });
+
 	describe('GET /users/:id/applications', function() {
-		it('should return all applications for a user', function() {
+		it('should return all applications for a user', function () {
 			let user;
 			return db.User.findOne({
-				// include: [{
-				// 	model: db.Application,
-				// 	as: 'applications'
-				// 	// through: {}
-				// }]
+				include: [{
+					model: db.Application,
+					as: 'applications'
+				}]
 			})
 			.then(_user => {
 				user = _user;
-				console.log(user);
+				console.log(`Here are the apps ${user.applications} \n\n\n\n`);
 				return chai.request(app)
 				.get(`/users/${user.id}/applications`);
 			})
 			.then(res => {
-				console.log(res.body);
 				res.should.have.status(200);
 				res.body.applications.forEach(application => {
 					application.should.be.a('object');
 					application.should.include.keys('id', 'serialNumber', 'title');
 				});
-				user.getApplications()
-				.then(applications => {
-					applications.map(application => application.id.should.deep.equal(res.body.applications.map(application => application.id)[0]));
-				})	
-			})
+				user.applications.map(application => application.id).should.deep.equal(res.body.applications.map(application => application.id));
+			});
 		});
 	});
 
-	// describe('GET /users/:id/matters', function() {
-	// 	it('should return all matters for a user', function () {
-	// 		return User.findOne({
-	// 			include: [{
-	// 				model: Matter,
-	// 				through: 'UserMatter'
-	// 			}]
-	// 		})
-	// 		.then(user => {
-	// 			return chai.request(app)
-	// 			.get(`/users/${this.user.id}/matters`);
-	// 		})
-	// 		.then(res => {
-	// 			res.should.have.status(200);
-	// 			res.body.id.should.equal(this.user.id);
-	// 			res.body.matters.forEach(matter => {
-	// 				matter.should.be.a('object');
-	// 				matter.should.include.keys('id', 'createdAt', 'updatedAt', 'firmReference', 'clientReference', 'legalType', 'importanceLevel');
-	// 			});
-	// 			this.user.matters.map(matter => matter.id).should.deep.equal(res.body.matters.map(matter => matter.id));
-	// 		});
-	// 	});
-	// });
+	describe('GET /users/:id/matters', function() {
+		it('should return all matters for a user', function () {
+			let user;
+			return db.User.findOne({
+				include: [{
+					model: db.Matter,
+					as: 'matters'
+				}]
+			})
+			.then(_user => {
+				user = _user;
+				return chai.request(app)
+				.get(`/users/${user.id}/matters`);
+			})
+			.then(res => {
+				res.should.have.status(200);
+				res.body.matters.forEach(matter => {
+					matter.should.be.a('object');
+					matter.should.include.keys('id', 'firmReference', 'clientReference', 'legalType', 'importanceLevel');
+				});
+				user.matters.map(matter => matter.id).should.deep.equal(res.body.matters.map(matter => matter.id));
+			});
+		});
+	});
 
 	// describe('GET /users/:id/tasks', function() {
 	// 	it('should return all tasks for a user', function() {

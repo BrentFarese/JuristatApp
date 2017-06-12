@@ -69,13 +69,19 @@ const User = sequelize.define('Users', {
 	classMethods: {
 		associate: function(models) {
 			User.belongsToMany(models.Application, {
-				through: 'UserApplication'
+				through: 'UserApplication',
+				foreignKey: 'applicationId',
+				as: 'applications'
 			});
 			User.belongsToMany(models.Matter, {
-				through: 'UserMatter'
+				through: 'UserMatter',
+				foreignKey: 'matterId',
+				as: 'matters'
 			});
 			User.belongsToMany(models.Task, {
-				through: 'UserTask'
+				through: 'UserTask',
+				foreignKey: 'taskId',
+				as: 'tasks'
 			});
 		}
 	},
