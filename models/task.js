@@ -4,10 +4,11 @@ const Sequelize = require('Sequelize');
 
 const {sequelize} = require('../db/sequelize');
 
-const Task = Sequelize.define('Tasks', {
+const Task = sequelize.define('Tasks', {
 	id: {
-		type: Sequelize.UUID,
-		primaryKey: true
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
 	},
 	createdAt: {
 		type: Sequelize.DATE, 
@@ -31,37 +32,37 @@ const Task = Sequelize.define('Tasks', {
 		type: Sequelize.DATE,
 		allowNull: false,
 		field: 'due_date'
-	}, {
-		tableName: 'tasks',
-		underscored: true,
-		classMethods: {
-			associate: function(models) {
-				Task.hasMany(models.Document, {
-					as: 'documents',
-					onDelete: 'SET NULL'
-				});
-				Task.hasOne(models.Matter, {
-					as: 'matters',
-					onDelete: 'SET NULL'
-				});
-				Task.hasOne(models.Application, {
-					as: 'applications',
-					onDelete: 'SET NULL'
-				});
-				Task.belongsToMany(models.User, {
-					through: 'UserTask'
-				});
-			}
-		},
-		instanceMethods: {
-			apiRepr: function() {
-				return {
-					id: this.id,
-					completed: this.completed,
-					taskDescription: this.taskDescription,
-					dueDate: this.dueDate
-				};
-			}
+	}
+}, {
+	tableName: 'tasks',
+	underscored: true,
+	classMethods: {
+		associate: function(models) {
+			Task.hasMany(models.Document, {
+				as: 'documents',
+				onDelete: 'SET NULL'
+			});
+			Task.belongsTo(models.Matter, {
+				as: 'matters',
+				onDelete: 'SET NULL'
+			});
+			Task.belongsTo(models.Application, {
+				as: 'applications',
+				onDelete: 'SET NULL'
+			});
+			Task.belongsToMany(models.User, {
+				through: 'UserTask'
+			});
+		}
+	},
+	instanceMethods: {
+		apiRepr: function() {
+			return {
+				id: this.id,
+				completed: this.completed,
+				taskDescription: this.taskDescription,
+				dueDate: this.dueDate
+			};
 		}
 	}
 });

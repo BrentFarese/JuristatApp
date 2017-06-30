@@ -6,8 +6,9 @@ const {sequelize} = require('../db/sequelize');
 
 const Application = sequelize.define('Applications', {
 	id: {
-		type: Sequelize.UUID,
-		primaryKey: true
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
 	},
 	createdAt: {
 		type: Sequelize.DATE,
@@ -24,36 +25,38 @@ const Application = sequelize.define('Applications', {
 	},
 	title: {
 		type: Sequelize.TEXT
-	}, {
-		tableName: 'applications',
-		underscored: true,
-		classMethods: function() {
-			associate: function(models) {
-				Application.hasOne(models.Matter, {
-					as: 'matters',
-					onDelete: 'SET NULL'
-				});
-				Application.hasMany(models.Task, {
-					as: 'tasks',
-					onDelete: 'cascade'
-				});
-				Application.hasMany(models.Document, {
-					as: 'documents',
-					onDelete: 'SET NULL'
-				});
-			}
-		}, 
-		instanceMethods: {
-			apiRepr: function() {
-				return {
-					id: this.id,
-					serialNumber: this.serialNumber,
-					title: this.title
-				};
-			}
+	}
+}, {
+	tableName: 'applications',
+	underscored: true,
+	classMethods: {
+		associate: function(models) {
+			Application.hasOne(models.Matter, {
+				as: 'matters',
+				onDelete: 'SET NULL'
+			});
+			Application.hasMany(models.Task, {
+				as: 'tasks',
+				onDelete: 'cascade'
+			});
+			Application.hasMany(models.Document, {
+				as: 'documents',
+				onDelete: 'SET NULL'
+			});
+			Application.belongsToMany(models.User, {
+				through: models.UserApplication
+			});
+		}
+	}, 
+	instanceMethods: {
+		apiRepr: function() {
+			return {
+				id: this.id,
+				serialNumber: this.serialNumber,
+				title: this.title
+			};
 		}
 	}
-}
 });
 
 module.exports = {
