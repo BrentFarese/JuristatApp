@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "NODE_ENV=test mocha",
     "start": "node server.js"
   },
   "author": "Brent Farese",

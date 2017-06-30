@@ -17,7 +17,7 @@ describe('users routes', function() {
 	beforeEach(function() {
 		return dropRecords()
 		.then(function() {
-			return seedDatabase(1);
+			return seedDatabase(2);
 		});
 	});	
 	
@@ -58,7 +58,6 @@ describe('users routes', function() {
 			})
 			.then(_user => {
 				user = _user;
-				console.log(`Here are the apps ${user.applications} \n\n\n\n`);
 				return chai.request(app)
 				.get(`/users/${user.id}/applications`);
 			})

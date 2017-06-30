@@ -71,17 +71,20 @@ const User = sequelize.define('Users', {
 			User.belongsToMany(models.Application, {
 				through: 'UserApplication',
 				foreignKey: 'applicationId',
-				as: 'applications'
+				as: 'applications',
+				onDelete: 'CASCADE'
 			});
 			User.belongsToMany(models.Matter, {
 				through: 'UserMatter',
 				foreignKey: 'matterId',
-				as: 'matters'
+				as: 'matters',
+				onDelete: 'CASCADE'
 			});
 			User.belongsToMany(models.Task, {
 				through: 'UserTask',
 				foreignKey: 'taskId',
-				as: 'tasks'
+				as: 'tasks',
+				onDelete: 'CASCADE'
 			});
 		}
 	},

@@ -7,7 +7,7 @@ const {db} = require('../models');
 
 before(function() {
 	return sequelize
-	.sync({force: true})
+	.sync({force: true, match: /_test$/ })
 	.then(() => runServer(PORT));
 });
 
@@ -15,40 +15,57 @@ after(function() {
 	return closeServer();
 });
 
-const fakeUser = {
-	userName: faker.internet.userName(),
-	firstName: faker.name.firstName(),
-	lastName: faker.name.lastName(),
-	password: faker.random.word(),
-	email: faker.internet.email(),
-	streetAddress: faker.address.streetAddress(),
-	state: faker.address.state(),
-	postalCode: faker.address.zipCode(),
-	country: faker.address.country(),
-	userType: faker.internet.userAgent()
+const fakeUser = () => {
+	return {
+		userName: faker.internet.userName(),
+		firstName: faker.name.firstName(),
+		lastName: faker.name.lastName(),
+		password: faker.random.word(),
+		email: faker.internet.email(),
+		streetAddress: faker.address.streetAddress(),
+		state: faker.address.state(),
+		postalCode: faker.address.zipCode(),
+		country: faker.address.country(),
+		userType: faker.internet.userAgent()
+	}
 };
 
-const fakeApplication = {
-	serialNumber: faker.random.number(),
-	title: faker.random.words()
+const fakeApplication = (userId, matterId) => {
+	return {
+		serialNumber: faker.random.number(),
+		title: faker.random.words(),
+		userId: userId,
+		matterId: matterId
+	}
 };
 
-const fakeMatter = {
-	firmReference: faker.random.alphaNumeric(),
-	clientReference: faker.random.alphaNumeric(),
-	legalType: faker.random.word(),
-	importanceLevel: faker.random.number()
+const fakeMatter =  (userId) => {
+	return {
+		firmReference: faker.random.alphaNumeric(),
+		clientReference: faker.random.alphaNumeric(),
+		legalType: faker.random.word(),
+		importanceLevel: faker.random.number(),
+		userId: userId
+	}
 };
 
-const fakeDocument = {
-	documentType: faker.random.word(),
-	url: faker.internet.url()
+const fakeDocument = (applicationId) => {
+	return {
+		documentType: faker.random.word(),
+		url: faker.internet.url(),
+		applicationId: applicationId
+	}
 };
 
-const fakeTask = {
-	completed: faker.random.boolean(),
-	taskDescription: faker.lorem.words(),
-	dueDate: faker.date.future()
+const fakeTask = (userId, applicationId, matterId) => {
+	return {
+		completed: faker.random.boolean(),
+		taskDescription: faker.lorem.words(),
+		dueDate: faker.date.future(),
+		userId: userId,
+		applicationId: applicationId,
+		matterId: matterId
+	}
 };
 
 function createRecords() {
@@ -57,31 +74,33 @@ function createRecords() {
 	let application;
 	let task;
 	let matter;
-	db.User.create(fakeUser)
+	console.log(fakeUser());
+	db.User.create(fakeUser())
 	//Adding a fakeMatter, needs keys userId.
 	.then(_user => {
 		user = _user;
-		fakeMatter.userId = user.id;
-		return db.Matter.create(fakeMatter)
-		//Adding a fakeApplication with userId and matterId.
+		console.log(`This is the userId ${user.id} \n\n`);
+		return db.Matter.create(fakeMatter(user.id))
+		// Adding a fakeApplication with userId and matterId.
 		.then(_matter => {
 			matter = _matter;
-			fakeApplication.userId = user.id;
-			fakeApplication.matterId = matter.id;
-			return db.Application.create(fakeApplication)
+			console.log(`This is the matter ${JSON.stringify(matter)} \n\n\n`);
+			return db.Application.create(fakeApplication(user.id, matter.id))
 			//Adding a document with applicationId.
 			.then(_application => {
 				application = _application;
-				fakeDocument.applicationId = application.id;
+				console.log(`This is the application ${JSON.stringify(application)} \n\n\n`);
 				user.addApplications([application]);
-				return db.Document.create(fakeDocument)
+				return db.Document.create(fakeDocument(application.id))
 				//Adding a task with userId, applicationId, and matterId.
 				.then(_document => {
 					document = _document;
-					fakeTask.userId = user.id;
-					fakeTask.applicationId = application.id;
-					fakeTask.matterId = matter.id;
-					return db.Task.create(fakeTask);
+					console.log(`This is the document ${JSON.stringify(document)} \n\n\n`);
+					return db.Task.create(fakeTask(user.id, application.id, matter.id))
+					.then(_task => {
+						task = _task;
+						console.log(`This is the task ${JSON.stringify(task)} \n\n\n`);
+					})
 				})
 			})
 		})
