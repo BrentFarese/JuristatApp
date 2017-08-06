@@ -1,51 +1,51 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application, Document, Index, Matter, Task, User} = require('../models');
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	Matter.findById(req.params.id)
+	db.Matter.findById(req.params.id)
 	.then(matter => res.status(200).json(matter.apiRepr()));
 });
 
 router.get('/:id/tasks', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Task,
 			as: 'tasks'
 		}]
 	})
-	.then(tasks => res.status(200).json({tasks: tasks.map(task => task.apiRepr())}));
+	.then(matter => res.status(200).json({tasks: matter.tasks.map(task => task.apiRepr())}));
 });
 
 router.get(':id/users', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: User,
 			as: 'users'
 		}]
 	})
-	.then(users => res.status(200).json({users: users.map(user => user.apiRepr())}));
+	.then(matter => res.status(200).json({users: matter.users.map(user => user.apiRepr())}));
 });
 
 router.get(':id/documents', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Document,
 			as: 'documents'
 		}]
 	})
-	.then(documents => res.status(200).json({documents: documents.map(document => document.apiRepr())}));
+	.then(matter => res.status(200).json({documents: matter.documents.map(document => document.apiRepr())}));
 });
 
 router.get(':id/applications', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Application,
 			as: 'applications'
 		}]
 	})
-	.then(applications => res.status(200).json({applications: applications.map(application => application.apiRepr())}));
+	.then(matter => res.status(200).json({applications: matter.applications.map(application => application.apiRepr())}));
 });
 
 router.post('/', (req, res) => {
@@ -60,7 +60,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Matter.create({
+	return db.Matter.create({
 		firmReference: req.body.firmReference,
 		clientReference: req.body.clientReference,
 		legalType: req.body.legalType,
@@ -75,7 +75,7 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-	f (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
+	if (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
 		const message = (
 			`Request path id (${req.params.id}) and request body id ` +
 			`(${req.body.id}) must match`);
@@ -91,7 +91,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return Matter.update(newMatter, {
+	return db.Matter.update(newMatter, {
 		where: {
 			id: req.body.id
 		}
@@ -104,7 +104,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Matter
+	return db.Matter
 	.destroy({
 		where: {
 			id: req.params.id
@@ -115,3 +115,5 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
+
+

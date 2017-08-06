@@ -1,43 +1,59 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application, Document, Index, Matter, Task, User} = require('../models');
-
-router.get('/', (req, res) => {
-	User.findAll()
-	.then(users => res.json(users.apiRepr()));
-})
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	User.findById(req.params.id)
+	db.User.findById(req.params.id)
 	.then(user => res.status(200).json(user.apiRepr()));
 });
 
 router.get('/:id/applications', (req, res) => {
-	User.findById(req.params.id, {
-		include: [{
-			model: Application,
-			as: 'applications'
-		}]})
-	.then(applications => res.json({applications: applications.map(app => app.apiRepr())}));
+	db.User.findById(req.params.id, {
+		// include: [{
+		// 	model: db.Application,
+		// 	as: 'applications',
+		// 	through: {}
+		// }]
+	})
+	.then(user => {
+		user.getApplications()
+		.then(applications => {
+			res.status(200).json({applications: applications.map(app => app.apiRepr())});
+		})
+	})
 });
 
 router.get('/:id/matters', (req, res) => {
-	User.findById(req.params.id, {
+	db.User.findById(req.params.id, {
 		include: [{
-			model: Matter,
+			model: db.Matter,
 			as: 'matters'
 		}]})
-	.then(matters => res.json({matters: matters.map(matter => matter.apiRepr())}));
+	.then(user => res.status(200).json({matters: user.matters.map(matter => matter.apiRepr())}));
 });
 
 router.get('/:id/tasks', (req, res) => {
-	User.findById(req.params.id, {
-		include: [{
-			model: Task,
-			as: 'tasks'
-		}]})
-	.then(tasks => res.json({tasks: tasks.map(task => task.apiRepr())}));
+	let promise;
+	if (req.query.status) {
+		promise = db.User.findById(req.params.id, {
+			include: [{
+				model: db.Task,
+				as: 'tasks',
+				through: {
+					attributes: ['completed', 'taskDescription', 'dueDate'],
+					where: {completed: req.query.status}
+				}
+			}]
+		})
+	} else {
+		promise = db.User.findById(req.params.id, {
+			include: [{
+				model: db.Task,
+				as: 'tasks'
+			}]})
+	};
+	promise.then(user => res.status(200).json({tasks: user.tasks.map(task => task.apiRepr())}));
 });
 
 router.post('/', (req, res) => {
@@ -52,7 +68,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return User.create({
+	return db.User.create({
 		userName: req.body.userName,
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
@@ -89,7 +105,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return User.update(newUser, {
+	return db.User.update(newUser, {
 		where: {
 			id: req.body.id
 		}
@@ -102,7 +118,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return User
+	return db.User
 	.destroy({
 		where: {
 			id: req.params.id

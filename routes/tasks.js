@@ -1,51 +1,51 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application, Document, Index, Matter, Task, User} = require('../models');
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	Task.findById(req.params.id)
+	db.Task.findById(req.params.id)
 	.then(task => res.status(200).json(task.apiRepr()));
 });
 
 router.get(':id/users', (req, res) => {
-	Task.findById(req.params.id, {
+	db.Task.findById(req.params.id, {
 		include: [{
 			model: User,
 			as: 'users'
 		}]
 	})
-	.then(users => res.status(200).json({users: users.map(user => user.apiRepr())}));
+	.then(task => res.status(200).json({users: task.users.map(user => user.apiRepr())}));
 });
 
 router.get(':id/documents', (req, res) => {
-	Task.findById(req.params.id, {
+	db.Task.findById(req.params.id, {
 		include: [{
 			model: Document,
 			as: 'documents'
 		}]
 	})
-	.then(documents => res.status(200).json({documents: documents.map(document => document.apiRepr())}));
+	.then(task => res.status(200).json({documents: task.documents.map(document => document.apiRepr())}));
 });
 
 router.get(':id/applications', (req, res) => {
-	Matter.findById(req.params.id, {
+	db.Matter.findById(req.params.id, {
 		include: [{
 			model: Application,
 			as: 'applications'
 		}]
 	})
-	.then(applications => res.status(200).json({applications: applications.map(application => application.apiRepr())}));
+	.then(matter => res.status(200).json({applications: matter.applications.map(application => application.apiRepr())}));
 });
 
 router.get(':id/matters', (req, res) => {
-	Task.findById(req.params.id, {
+	db.Task.findById(req.params.id, {
 		include: [{
 			model: Matter,
 			as: 'matters'
 		}]
 	})
-	.then(matters => res.status(200).json({matters: matters.map(matter => matter.apiRepr())}));
+	.then(task => res.status(200).json({matters: task.matters.map(matter => matter.apiRepr())}));
 });
 
 router.post('/', (req, res) => {
@@ -60,7 +60,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Task.create({
+	return db.Task.create({
 		completed: req.body.completed,
 		taskDescription: req.body.taskDescription,
 		dueDate: req.body.dueDate
@@ -74,7 +74,7 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-	f (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
+	if (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
 		const message = (
 			`Request path id (${req.params.id}) and request body id ` +
 			`(${req.body.id}) must match`);
@@ -90,7 +90,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return Task.update(newTask, {
+	return db.Task.update(newTask, {
 		where: {
 			id: req.body.id
 		}
@@ -103,7 +103,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Task
+	return db.Task
 	.destroy({
 		where: {
 			id: req.params.id

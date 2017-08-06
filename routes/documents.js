@@ -1,21 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
-const {Application, Document, Index, Matter, Task, User} = require('../models');
+const {db} = require('../models');
 
 router.get('/:id', (req, res) => {
-	Document.findById(req.params.id)
+	db.Document.findById(req.params.id)
 	.then(document => res.status(200).json(document.apiRepr()));
 });
 
 router.get('/:id/tasks', (req, res) => {
-	Document.findById(req.params.id, {
+	db.Document.findById(req.params.id, {
 		include: [{
 			model: Task,
 			as: 'tasks'
 		}]
 	})
-	.then(tasks => res.status(200).json({tasks: tasks.map(task => task.apiRepr())}));
+	.then(document => res.status(200).json({tasks: document.tasks.map(task => task.apiRepr())}));
 });
 
 router.post('/', (req, res) => {
@@ -30,7 +30,7 @@ router.post('/', (req, res) => {
 		}
 	};
 
-	return Document.create({
+	return db.Document.create({
 		documentType: req.body.documentType,
 		url: req.body.url
 	})
@@ -43,7 +43,7 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-	f (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
+	if (!(req.params.id && req.body.id && req.params.id === req.body.id.toString())) {
 		const message = (
 			`Request path id (${req.params.id}) and request body id ` +
 			`(${req.body.id}) must match`);
@@ -59,7 +59,7 @@ router.put('/:id', (req, res) => {
 		}
 	});
 
-	return Document.update(newDocument, {
+	return db.Document.update(newDocument, {
 		where: {
 			id: req.body.id
 		}
@@ -72,7 +72,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	return Document
+	return db.Document
 	.destroy({
 		where: {
 			id: req.params.id
