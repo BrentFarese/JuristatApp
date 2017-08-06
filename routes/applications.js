@@ -3,13 +3,17 @@ const router = express.Router();
 
 const {db} = require('../models');
 
+router.get('/', (req, res) => {
+	db.Application.findAll()
+	.then(applications => res.status(200).json({applications: applications.map(application => application.apiRepr())}));
+})
 
 router.get('/:id', (req, res) => {
 	db.Application.findById(req.params.id)
 	.then(application => res.status(200).json(application.apiRepr()));
 });
 
-router.get(':id/tasks', (req, res) => {
+router.get('/:id/tasks', (req, res) => {
 	db.Application.findById(req.params.id, {
 		include: [{
 			model: Task,
@@ -18,7 +22,7 @@ router.get(':id/tasks', (req, res) => {
 	.then(application => res.json({tasks: application.tasks.map(task => task.apiRepr())}));
 });
 
-router.get(':id/documents', (req, res) => {
+router.get('/:id/documents', (req, res) => {
 	db.Application.findById(req.params.id, {
 		include: [{
 			model: Document,
@@ -27,9 +31,9 @@ router.get(':id/documents', (req, res) => {
 	.then(application => res.status(200).json({documents: application.documents.map(document => document.apiRepr())}));
 });
 
-router.post('/', (req, res) => {
+router.post('/:id', (req, res) => {
 	const requiredFields = ['serialNumber', 'title'];
-	
+	console.log(req.body);	
 	for (let i=0; i<requiredFields.length; i++) {
 		if (!(requiredFields[i] in req.body)) {
 			field = requiredFields[i];
@@ -92,3 +96,5 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
+
+

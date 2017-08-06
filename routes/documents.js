@@ -15,7 +15,7 @@ router.get('/:id/tasks', (req, res) => {
 			as: 'tasks'
 		}]
 	})
-	.then(docment => res.status(200).json({tasks: document.tasks.map(task => task.apiRepr())}));
+	.then(document => res.status(200).json({tasks: document.tasks.map(task => task.apiRepr())}));
 });
 
 router.post('/', (req, res) => {
